@@ -16,9 +16,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.spacegaze.R
 import com.example.spacegaze.ui.theme.ExtendedTheme
+import com.example.spacegaze.ui.theme.SpaceGazeTheme
 
 @Composable
 fun HomeScreen(
@@ -61,7 +63,7 @@ fun TimeBlock(
     ) {
         Box(modifier = modifier
             .background(MaterialTheme.colors.surface, shape = RoundedCornerShape(5.dp))
-            .padding(25.dp, 8.dp, 25.dp, 8.dp)
+            .padding(horizontal = 25.dp, vertical = 8.dp)
         ) {
             Text(
                 text = time,
@@ -80,10 +82,9 @@ fun TimeBlock(
 fun ScheduledLaunches () {
     Text(text = "Scheduled", style = MaterialTheme.typography.h1)
     LazyRow() {
-        items(2) {
+        items(20) {
             CardItem(launch = it)
         }
-
     }
 }
 
@@ -94,6 +95,7 @@ fun CardItem(
 ) {
     Card(
         modifier
+            .padding(end = 10.dp)
             .background(MaterialTheme.colors.surface)
             .fillMaxWidth(),
         elevation = 4.dp,
@@ -103,19 +105,35 @@ fun CardItem(
             modifier.padding(10.dp)
         ) {
             Column(
-               verticalArrangement = Arrangement.SpaceBetween
+                //verticalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(text = "Test")
                 Text(text = "Crew-6")
                 Divider(
                     modifier.height(50.dp)
                 )
+                Row(
+                    modifier
+                        .height(IntrinsicSize.Min)
+                ) {
+                    Box(
+                        modifier
+                            .padding(end = 10.dp, top = 7.dp, bottom = 7.dp)
+                            .background(color = ExtendedTheme.colors.accentColor, shape = RoundedCornerShape(5.dp))
+                            .width(2.dp)
+                            .fillMaxHeight(),
+                    )
+                    Column() {
+                        Text(text = "Test")
+                        Text(text = "Crew-6")
+                    }
+                }
+
             }
             Box(
                 modifier
                     .width(200.dp)
                     .background(Color.White)
-
             )
         }
 
@@ -125,4 +143,12 @@ fun CardItem(
 @Composable
 fun RecentLaunches() {
 
+}
+
+@Preview(showBackground = true)
+@Composable
+fun DefaultPreview() {
+    SpaceGazeTheme() {
+        HomeScreen()
+    }
 }
