@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">SpaceGaze</string>
+    <string name="back_button">Back</string>
+    <string name="hours">Hours</string>
+    <string name="minutes">Mins</string>
+    <string name="seconds">Secs</string>
+
+</resources>

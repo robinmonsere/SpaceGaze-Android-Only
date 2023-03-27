@@ -1,0 +1,128 @@
+package com.example.spacegaze.ui
+
+import androidx.annotation.StringRes
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Card
+import androidx.compose.material.Divider
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import com.example.spacegaze.R
+import com.example.spacegaze.ui.theme.ExtendedTheme
+
+@Composable
+fun HomeScreen(
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier.padding(20.dp)
+    ) {
+        NextLaunch()
+        ScheduledLaunches()
+    }
+}
+
+@Composable
+fun NextLaunch(
+    modifier: Modifier = Modifier
+) {
+    Column() {
+        Text(text = "Launch Name", style = MaterialTheme.typography.h1)
+        Text(text = "View launch >", style = MaterialTheme.typography.h2)
+        Row(
+            modifier.width(250.dp),
+            horizontalArrangement = Arrangement.SpaceAround
+        ) {
+            TimeBlock(R.string.hours, "01")
+            TimeBlock(R.string.minutes, "02")
+            TimeBlock(R.string.seconds, "03")
+        }
+    }
+}
+
+@Composable
+fun TimeBlock(
+    @StringRes timeType: Int,
+    time : String,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Box(modifier = modifier
+            .background(MaterialTheme.colors.surface, shape = RoundedCornerShape(5.dp))
+            .padding(25.dp, 8.dp, 25.dp, 8.dp)
+        ) {
+            Text(
+                text = time,
+                style = MaterialTheme.typography.h3,
+            )
+        }
+        Spacer(modifier.height(10.dp))
+        Text(
+            text = stringResource(id = timeType),
+            color = ExtendedTheme.colors.secondaryOnSurface,
+        )
+    }
+}
+
+@Composable
+fun ScheduledLaunches () {
+    Text(text = "Scheduled", style = MaterialTheme.typography.h1)
+    LazyRow() {
+        items(2) {
+            CardItem(launch = it)
+        }
+
+    }
+}
+
+@Composable
+fun CardItem(
+    launch: Int,
+    modifier: Modifier = Modifier
+) {
+    Card(
+        modifier
+            .background(MaterialTheme.colors.surface)
+            .fillMaxWidth(),
+        elevation = 4.dp,
+        shape = RoundedCornerShape(16.dp)
+    ) {
+        Row(
+            modifier.padding(10.dp)
+        ) {
+            Column(
+               verticalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(text = "Test")
+                Text(text = "Crew-6")
+                Divider(
+                    modifier.height(50.dp)
+                )
+            }
+            Box(
+                modifier
+                    .width(200.dp)
+                    .background(Color.White)
+
+            )
+        }
+
+    }
+}
+
+@Composable
+fun RecentLaunches() {
+
+}
