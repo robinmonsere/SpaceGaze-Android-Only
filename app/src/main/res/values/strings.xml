@@ -4,5 +4,6 @@
     <string name="hours">Hours</string>
     <string name="minutes">Mins</string>
     <string name="seconds">Secs</string>
-
+    <string name="scheduled">Scheduled</string>
+    <string name="recent">Recent</string>
 </resources>

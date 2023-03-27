@@ -27,10 +27,14 @@ fun HomeScreen(
     modifier: Modifier = Modifier
 ) {
     Column(
-        modifier.padding(20.dp)
+        modifier
+            .padding(start = 20.dp, bottom = 100.dp)
+            .fillMaxHeight(),
+        verticalArrangement = Arrangement.SpaceBetween
     ) {
         NextLaunch()
         ScheduledLaunches()
+        RecentLaunches()
     }
 }
 
@@ -42,8 +46,10 @@ fun NextLaunch(
         Text(text = "Launch Name", style = MaterialTheme.typography.h1)
         Text(text = "View launch >", style = MaterialTheme.typography.h2)
         Row(
-            modifier.width(250.dp),
-            horizontalArrangement = Arrangement.SpaceAround
+            modifier
+                .padding(top = 5.dp)
+                .width(250.dp),
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
             TimeBlock(R.string.hours, "01")
             TimeBlock(R.string.minutes, "02")
@@ -79,11 +85,20 @@ fun TimeBlock(
 }
 
 @Composable
-fun ScheduledLaunches () {
-    Text(text = "Scheduled", style = MaterialTheme.typography.h1)
-    LazyRow() {
-        items(20) {
-            CardItem(launch = it)
+fun ScheduledLaunches (
+    modifier: Modifier = Modifier,
+) {
+    Column() {
+        Text(
+            text = stringResource(R.string.scheduled),
+            style = MaterialTheme.typography.h1,
+        )
+        LazyRow(
+            modifier.background(MaterialTheme.colors.background)
+        ) {
+            items(20) {
+                CardItem(launch = it)
+            }
         }
     }
 }
@@ -119,7 +134,10 @@ fun CardItem(
                     Box(
                         modifier
                             .padding(end = 10.dp, top = 7.dp, bottom = 7.dp)
-                            .background(color = ExtendedTheme.colors.accentColor, shape = RoundedCornerShape(5.dp))
+                            .background(
+                                color = ExtendedTheme.colors.accentColor,
+                                shape = RoundedCornerShape(5.dp)
+                            )
                             .width(2.dp)
                             .fillMaxHeight(),
                     )
@@ -141,8 +159,22 @@ fun CardItem(
 }
 
 @Composable
-fun RecentLaunches() {
-
+fun RecentLaunches(
+    modifier: Modifier = Modifier,
+) {
+    Column() {
+        Text(
+            text = stringResource(R.string.recent),
+            style = MaterialTheme.typography.h1,
+        )
+        LazyRow(
+            modifier.background(MaterialTheme.colors.background)
+        ) {
+            items(20) {
+                CardItem(launch = it)
+            }
+        }
+    }
 }
 
 @Preview(showBackground = true)
