@@ -17,11 +17,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.spacegaze.R
+import com.example.spacegaze.model.Launch
+import com.example.spacegaze.ui.SpaceGazeUiState
 import com.example.spacegaze.ui.theme.ExtendedTheme
 import com.example.spacegaze.ui.theme.SpaceGazeTheme
 
 @Composable
 fun HomeScreen(
+    spaceGazeUiState: SpaceGazeUiState,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -30,7 +33,12 @@ fun HomeScreen(
             .fillMaxHeight(),
         verticalArrangement = Arrangement.SpaceBetween
     ) {
-        NextLaunch()
+        when (spaceGazeUiState) {
+            is SpaceGazeUiState.NextLaunch -> NextLaunch(spaceGazeUiState.nextLaunch.launches[0])
+            else -> {}
+        }
+
+        //NextLaunch()
         ScheduledLaunches()
         RecentLaunches()
     }
@@ -38,10 +46,13 @@ fun HomeScreen(
 
 @Composable
 fun NextLaunch(
+    launch: Launch,
     modifier: Modifier = Modifier
 ) {
+    val test : String = launch.name
+
     Column() {
-        Text(text = "Launch Name", style = MaterialTheme.typography.h1)
+        Text(text = test, style = MaterialTheme.typography.h1)
         Text(text = "View launch >", style = MaterialTheme.typography.h2)
         Row(
             modifier
@@ -174,11 +185,13 @@ fun RecentLaunches(
         }
     }
 }
-
+/*
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {
     SpaceGazeTheme() {
-        HomeScreen()
+        HomeScreen(SpaceGazeUiState)
     }
 }
+
+ */

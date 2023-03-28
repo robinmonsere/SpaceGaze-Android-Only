@@ -12,12 +12,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.spacegaze.ui.screens.HomeScreen
 import com.example.spacegaze.R
+import com.example.spacegaze.ui.SpaceGazeViewModel
+
 enum class SpaceGazeScreen(@StringRes val title: Int) {
     Home(title = R.string.app_name),
 }
@@ -69,6 +71,7 @@ fun SpaceGazeBottomBar() {
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun SpaceGazeApp(modifier: Modifier = Modifier) {
+    val spaceGazeViewModel: SpaceGazeViewModel = viewModel(factory = SpaceGazeViewModel.Factory)
     val navController = rememberNavController()
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentScreen = SpaceGazeScreen.valueOf(
@@ -92,7 +95,10 @@ fun SpaceGazeApp(modifier: Modifier = Modifier) {
             modifier = modifier,
         ) {
             composable(route = SpaceGazeScreen.Home.name) {
-                HomeScreen()
+                HomeScreen(
+                    spaceGazeUiState = spaceGazeViewModel.spaceGazeUiState
+                )
+                //HomeScreen()
             }
         }
 
