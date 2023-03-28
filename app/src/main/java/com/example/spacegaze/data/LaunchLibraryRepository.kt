@@ -1,16 +1,15 @@
 package com.example.spacegaze.data
 
+import com.example.spacegaze.model.Launch
 import com.example.spacegaze.network.LaunchLibraryApiService
 
 interface LaunchLibraryRepository {
-    suspend fun getNextLaunch(): List<Int>
+    suspend fun getNextLaunch(): Launch
 }
 
 class NetworkLaunchLibraryRepository(
     private val LaunchLibraryApiService: LaunchLibraryApiService
 ) : LaunchLibraryRepository {
-    override suspend fun getNextLaunch(): List<Int> {
-        TODO("Not yet implemented")
-    }
+    override suspend fun getNextLaunch(): Launch = LaunchLibraryApiService.getNextLaunch()
 
 }

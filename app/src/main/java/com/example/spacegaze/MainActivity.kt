@@ -10,6 +10,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.spacegaze.ui.screens.SpaceGazeApp
 import com.example.spacegaze.ui.theme.SpaceGazeTheme
 
 class MainActivity : ComponentActivity() {
@@ -23,15 +24,11 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-@Composable
-fun Greeting(name: String) {
-    Text(text = "Hello $name!")
-}
 
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {
     SpaceGazeTheme {
-        Greeting("Android")
+        SpaceGazeApp()
     }
 }
