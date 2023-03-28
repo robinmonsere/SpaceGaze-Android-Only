@@ -22,8 +22,10 @@ import com.example.spacegaze.ui.SpaceGazeViewModel
 
 enum class SpaceGazeScreen(@StringRes val title: Int) {
     Home(title = R.string.app_name),
+    Launch(title = R.string.view_launch)
 }
 
+/*
 @Composable
 fun SpaceGazeTopBar(
     modifier: Modifier = Modifier,
@@ -46,12 +48,17 @@ fun SpaceGazeTopBar(
         }
     )
 }
+*/
 
 @Composable
-fun SpaceGazeBottomBar() {
+fun SpaceGazeBottomBar(
+    onHome: () -> Unit
+) {
     BottomAppBar() {
         Row() {
-            IconButton(onClick = { /*TODO*/ }) {
+            IconButton(
+                onClick = onHome
+            ) {
                 Icon(
                     imageVector = Icons.Rounded.Home,
                     contentDescription = stringResource(R.string.back_button)
@@ -78,15 +85,12 @@ fun SpaceGazeApp(modifier: Modifier = Modifier) {
         backStackEntry?.destination?.route ?: SpaceGazeScreen.Home.name
     )
     Scaffold(
-        topBar = {
-            SpaceGazeTopBar(
-                canNavigateBack = false,
-                navigateUp = { /*TODO*/ },
-                currentScreenTitle = currentScreen.title,
-            )
-        },
         bottomBar = {
-            SpaceGazeBottomBar()
+            SpaceGazeBottomBar(
+                onHome = {
+                    navController.popBackStack(SpaceGazeScreen.Home.name, inclusive = false)
+                }
+            )
         }
     ) {
         NavHost(
@@ -96,12 +100,14 @@ fun SpaceGazeApp(modifier: Modifier = Modifier) {
         ) {
             composable(route = SpaceGazeScreen.Home.name) {
                 HomeScreen(
-                    spaceGazeUiState = spaceGazeViewModel.spaceGazeUiState
+                    spaceGazeUiState = spaceGazeViewModel.spaceGazeUiState,
+                    onViewLaunch = { navController.navigate(SpaceGazeScreen.Launch.name) }
                 )
-                //HomeScreen()
+            }
+
+            composable(route = SpaceGazeScreen.Launch.name) {
+                Text(text = "Tesdt")
             }
         }
-
-
     }
 }

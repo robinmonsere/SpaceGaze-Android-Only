@@ -11,6 +11,7 @@ private val DarkColorPalette = darkColors(
     background = Black,
     surface = SurfaceGray,
     onSurface = White,
+
     //secondary = AccentRed,
     //onSecondary = AccentRed,
 )
