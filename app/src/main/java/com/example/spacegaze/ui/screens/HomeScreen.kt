@@ -21,6 +21,8 @@ import com.example.spacegaze.model.Launch
 import com.example.spacegaze.ui.SpaceGazeUiState
 import com.example.spacegaze.ui.theme.ExtendedTheme
 import com.example.spacegaze.ui.theme.SpaceGazeTheme
+import com.example.spacegaze.util.getTimeDifference
+
 
 @Composable
 fun HomeScreen(
@@ -37,7 +39,6 @@ fun HomeScreen(
             is SpaceGazeUiState.NextLaunch -> NextLaunch(spaceGazeUiState.nextLaunch.launches[0])
             else -> {}
         }
-
         //NextLaunch()
         ScheduledLaunches()
         RecentLaunches()
@@ -50,7 +51,7 @@ fun NextLaunch(
     modifier: Modifier = Modifier
 ) {
     val test : String = launch.name
-
+    val (hour, minutes, seconds) = getTimeDifference(launch.net)
     Column() {
         Text(text = test, style = MaterialTheme.typography.h1)
         Text(text = "View launch >", style = MaterialTheme.typography.h2)
@@ -60,9 +61,9 @@ fun NextLaunch(
                 .width(250.dp),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            TimeBlock(R.string.hours, "01")
-            TimeBlock(R.string.minutes, "02")
-            TimeBlock(R.string.seconds, "03")
+            TimeBlock(R.string.hours, hour)
+            TimeBlock(R.string.minutes, minutes)
+            TimeBlock(R.string.seconds, seconds)
         }
     }
 }
