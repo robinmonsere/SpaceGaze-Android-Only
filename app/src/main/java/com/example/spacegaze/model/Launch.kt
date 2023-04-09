@@ -12,9 +12,13 @@ data class LaunchList(
 
 @Serializable
 data class Launch(
+    val id: String,
     val name: String,
-    val status: LaunchStatus,
+    val status: LaunchStatus?,
     val net: String,
+    @SerialName("lsp_name")
+    val lspName: String?,
+    val mission: String?
 )
 
 @Serializable

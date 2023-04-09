@@ -2,16 +2,24 @@ package com.example.spacegaze.ui.screens
 
 import android.annotation.SuppressLint
 import androidx.annotation.StringRes
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.RocketLaunch
 import androidx.compose.material.icons.rounded.Home
+import androidx.compose.material.icons.rounded.RocketLaunch
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -52,9 +60,13 @@ fun SpaceGazeTopBar(
 
 @Composable
 fun SpaceGazeBottomBar(
-    onHome: () -> Unit
+    onHome: () -> Unit,
+    onLaunch: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
-    BottomAppBar() {
+    BottomAppBar(
+        modifier.clip(RoundedCornerShape(15.dp, 15.dp, 0.dp, 0.dp)),
+    ) {
         Row() {
             IconButton(
                 onClick = onHome
@@ -64,9 +76,9 @@ fun SpaceGazeBottomBar(
                     contentDescription = stringResource(R.string.back_button)
                 )
             }
-            IconButton(onClick = { /*TODO*/ }) {
+            IconButton(onClick = onLaunch ) {
                 Icon(
-                    imageVector = Icons.Rounded.Search,
+                    imageVector = Icons.Rounded.RocketLaunch,
                     contentDescription = stringResource(R.string.back_button)
                 )
             }
@@ -84,11 +96,15 @@ fun SpaceGazeApp(modifier: Modifier = Modifier) {
     val currentScreen = SpaceGazeScreen.valueOf(
         backStackEntry?.destination?.route ?: SpaceGazeScreen.Home.name
     )
+
     Scaffold(
         bottomBar = {
             SpaceGazeBottomBar(
                 onHome = {
                     navController.popBackStack(SpaceGazeScreen.Home.name, inclusive = false)
+                },
+                onLaunch = {
+                    navController.navigate(SpaceGazeScreen.Launch.name)
                 }
             )
         }
@@ -96,7 +112,7 @@ fun SpaceGazeApp(modifier: Modifier = Modifier) {
         NavHost(
             navController = navController,
             startDestination = SpaceGazeScreen.Home.name,
-            modifier = modifier,
+            modifier = modifier.padding(start = 20.dp, bottom = 100.dp, top= 20.dp),
         ) {
             composable(route = SpaceGazeScreen.Home.name) {
                 HomeScreen(
@@ -106,7 +122,10 @@ fun SpaceGazeApp(modifier: Modifier = Modifier) {
             }
 
             composable(route = SpaceGazeScreen.Launch.name) {
-                Text(text = "Tesdt")
+                LaunchScreen(
+                    "Launch Name",
+                    onReturn = { navController.popBackStack(SpaceGazeScreen.Home.name, inclusive = false) }
+                )
             }
         }
     }

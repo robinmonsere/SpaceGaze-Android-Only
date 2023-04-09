@@ -18,10 +18,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.spacegaze.R
 import com.example.spacegaze.model.Launch
+import com.example.spacegaze.model.LaunchList
 import com.example.spacegaze.ui.SpaceGazeUiState
 import com.example.spacegaze.ui.theme.ExtendedTheme
 import com.example.spacegaze.ui.theme.SpaceGazeTheme
 import com.example.spacegaze.util.getTimeDifference
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.items
+import com.example.spacegaze.util.getTimeCleaned
 
 
 @Composable
@@ -32,17 +36,18 @@ fun HomeScreen(
 ) {
     Column(
         modifier
-            .padding(start = 20.dp, bottom = 100.dp)
             .fillMaxHeight(),
         verticalArrangement = Arrangement.SpaceBetween
     ) {
         when (spaceGazeUiState) {
-            is SpaceGazeUiState.NextLaunch -> NextLaunch(spaceGazeUiState.nextLaunch.launches[0], onViewLaunch)
+            is SpaceGazeUiState.NextLaunch -> {
+                NextLaunch(spaceGazeUiState.nextLaunch.launches[0], onViewLaunch)
+                val removedFirst = spaceGazeUiState.nextLaunch.launches.drop(1)
+                ScheduledLaunches(removedFirst, onViewLaunch)
+                RecentLaunches(spaceGazeUiState.nextLaunch.launches)
+            }
             else -> {}
         }
-        //NextLaunch()
-        ScheduledLaunches()
-        RecentLaunches()
     }
 }
 
@@ -53,11 +58,13 @@ fun NextLaunch(
     modifier: Modifier = Modifier
 ) {
     val (hour, minutes, seconds) = getTimeDifference(launch.net)
-    Column() {
-        Text(launch.name, style = MaterialTheme.typography.h1)
+    Column {
+        Text(launch.name, modifier.padding(bottom = 5.dp), style = MaterialTheme.typography.h1)
         Text(
             stringResource(R.string.view_launch),
-            modifier.clickable(onClick = { onViewLaunch() }),
+            modifier
+                .clickable(onClick = { onViewLaunch() })
+                .padding(bottom = 5.dp),
             color = ExtendedTheme.colors.secondaryOnSurface,
             style = MaterialTheme.typography.h2
         )
@@ -102,6 +109,8 @@ fun TimeBlock(
 
 @Composable
 fun ScheduledLaunches (
+    LaunchList: List<Launch>,
+    onViewLaunch: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column() {
@@ -112,8 +121,8 @@ fun ScheduledLaunches (
         LazyRow(
             modifier.background(MaterialTheme.colors.background)
         ) {
-            items(20) {
-                CardItem(launch = it)
+            items(items = LaunchList) { launch ->
+                CardItem(launch)
             }
         }
     }
@@ -121,24 +130,24 @@ fun ScheduledLaunches (
 
 @Composable
 fun CardItem(
-    launch: Int,
+    launch: Launch,
     modifier: Modifier = Modifier
 ) {
+    val(time, date) = getTimeCleaned(launch.net)
     Box(
         modifier
             .padding(end = 10.dp)
             .background(MaterialTheme.colors.surface, shape = RoundedCornerShape(16.dp))
-            .fillMaxWidth(),
+            .width(300.dp)
+            .height(150.dp),
     ) {
         Row(
             modifier.padding(10.dp)
         ) {
-            Column(
-                //verticalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(text = "Test")
-                Text(text = "Crew-6")
-                Divider(
+            Column() {
+                launch.mission?.let { Text(text = it) }
+                launch.lspName?.let { Text(text = it, color = ExtendedTheme.colors.secondaryOnSurface) }
+                Spacer(
                     modifier.height(50.dp)
                 )
                 Row(
@@ -156,17 +165,11 @@ fun CardItem(
                             .fillMaxHeight(),
                     )
                     Column() {
-                        Text(text = "Test")
-                        Text(text = "Crew-6")
+                        Text(time)
+                        Text(date)
                     }
                 }
-
             }
-            Box(
-                modifier
-                    .width(200.dp)
-                    .background(Color.White)
-            )
         }
 
     }
@@ -174,6 +177,7 @@ fun CardItem(
 
 @Composable
 fun RecentLaunches(
+    LaunchList: List<Launch>,
     modifier: Modifier = Modifier,
 ) {
     Column() {
@@ -184,8 +188,8 @@ fun RecentLaunches(
         LazyRow(
             modifier.background(MaterialTheme.colors.background)
         ) {
-            items(20) {
-                CardItem(launch = it)
+            items(items = LaunchList) { launch ->
+                CardItem(launch)
             }
         }
     }

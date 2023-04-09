@@ -28,19 +28,23 @@ class SpaceGazeViewModel(private val launchLibraryRepository: LaunchLibraryRepos
         private set
 
     init {
-        getNextLaunch()
+        getUpcomingLaunches()
     }
 
-    fun getNextLaunch() {
+    fun getUpcomingLaunches() {
         viewModelScope.launch {
             spaceGazeUiState = try {
-                SpaceGazeUiState.NextLaunch(launchLibraryRepository.getNextLaunch())
+                SpaceGazeUiState.NextLaunch(launchLibraryRepository.getUpcomingLaunches())
             } catch (e: IOException) {
                 SpaceGazeUiState.Error
             } catch (e: HttpException) {
                 SpaceGazeUiState.Error
             }
         }
+    }
+
+    fun getPreviousLaunches() {
+
     }
 
     companion object {
