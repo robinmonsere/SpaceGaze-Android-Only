@@ -1,6 +1,5 @@
 package com.example.spacegaze.network
 
-import com.example.spacegaze.model.Launch
 import com.example.spacegaze.model.LaunchList
 import retrofit2.http.GET
 

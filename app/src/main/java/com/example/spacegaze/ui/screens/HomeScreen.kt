@@ -1,37 +1,36 @@
 package com.example.spacegaze.ui.screens
 
+import android.util.Log
 import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.spacegaze.R
-import com.example.spacegaze.model.Launch
-import com.example.spacegaze.model.LaunchList
 import com.example.spacegaze.ui.SpaceGazeUiState
 import com.example.spacegaze.ui.theme.ExtendedTheme
-import com.example.spacegaze.ui.theme.SpaceGazeTheme
 import com.example.spacegaze.util.getTimeDifference
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
+import androidx.compose.runtime.*
+import com.example.spacegaze.model.Launch
+import com.example.spacegaze.ui.SpaceGazeViewModel
 import com.example.spacegaze.util.getTimeCleaned
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.first
 
+private const val TAG = "HomeScreen"
 
 @Composable
 fun HomeScreen(
     spaceGazeUiState: SpaceGazeUiState,
-    onViewLaunch: () -> Unit,
+    viewModel: SpaceGazeViewModel,
+    onViewLaunch: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -39,14 +38,20 @@ fun HomeScreen(
             .fillMaxHeight(),
         verticalArrangement = Arrangement.SpaceBetween
     ) {
+        Log.d(TAG, spaceGazeUiState.toString())
         when (spaceGazeUiState) {
-            is SpaceGazeUiState.NextLaunch -> {
-                NextLaunch(spaceGazeUiState.nextLaunch.launches[0], onViewLaunch)
-                val removedFirst = spaceGazeUiState.nextLaunch.launches.drop(1)
-                ScheduledLaunches(removedFirst, onViewLaunch)
-                RecentLaunches(spaceGazeUiState.nextLaunch.launches)
+            is SpaceGazeUiState.UpcomingLaunches -> {
+                val launches = spaceGazeUiState.launchList.collectAsState(initial = emptyList()).value
+                if (launches.isNotEmpty()) {
+                    NextLaunch(launches[0], onViewLaunch)
+                    val removedFirst = launches.drop(1)
+                    ScheduledLaunches(removedFirst, onViewLaunch)
+                    RecentLaunches(launches)
+                }
             }
-            else -> {}
+            else -> {
+                Log.d(TAG, "ELSE AAA")
+            }
         }
     }
 }
@@ -54,16 +59,26 @@ fun HomeScreen(
 @Composable
 fun NextLaunch(
     launch: Launch,
-    onViewLaunch: () -> Unit,
+    onViewLaunch: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val (hour, minutes, seconds) = getTimeDifference(launch.net)
+    var remainingTime by remember { mutableStateOf(getTimeDifference(launch.net)) }
+
+    LaunchedEffect(Unit) {
+        while (true) {
+            remainingTime = getTimeDifference(launch.net)
+            delay(1000)
+        }
+    }
+
     Column {
         Text(launch.name, modifier.padding(bottom = 5.dp), style = MaterialTheme.typography.h1)
         Text(
             stringResource(R.string.view_launch),
             modifier
-                .clickable(onClick = { onViewLaunch() })
+                .clickable() {
+                    onViewLaunch(launch.id)
+                }
                 .padding(bottom = 5.dp),
             color = ExtendedTheme.colors.secondaryOnSurface,
             style = MaterialTheme.typography.h2
@@ -74,9 +89,9 @@ fun NextLaunch(
                 .width(250.dp),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            TimeBlock(R.string.hours, hour)
-            TimeBlock(R.string.minutes, minutes)
-            TimeBlock(R.string.seconds, seconds)
+            TimeBlock(R.string.hours, remainingTime.first)
+            TimeBlock(R.string.minutes, remainingTime.second)
+            TimeBlock(R.string.seconds, remainingTime.third)
         }
     }
 }
@@ -110,7 +125,7 @@ fun TimeBlock(
 @Composable
 fun ScheduledLaunches (
     LaunchList: List<Launch>,
-    onViewLaunch: () -> Unit,
+    onViewLaunch: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column() {

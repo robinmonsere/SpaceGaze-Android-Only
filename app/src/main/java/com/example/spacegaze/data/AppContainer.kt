@@ -7,12 +7,11 @@ import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 
 interface AppContainer {
-    val LaunchLibraryRepository: LaunchLibraryRepository
+    val launchLibraryRepository: LaunchLibraryRepository
 }
 
 class DefaultAppContainer : AppContainer {
     private val BASE_URL = "https://ll.thespacedevs.com/2.2.0/"
-    //private val BASE_URL = "https://android-kotlin-fun-mars-server.appspot.com/"
 
     val json = Json {
         ignoreUnknownKeys = true
@@ -27,7 +26,7 @@ class DefaultAppContainer : AppContainer {
         retrofit.create(LaunchLibraryApiService::class.java)
     }
 
-    override val LaunchLibraryRepository: LaunchLibraryRepository by lazy {
+    override val launchLibraryRepository: LaunchLibraryRepository by lazy {
         NetworkLaunchLibraryRepository(retrofitService)
     }
 }

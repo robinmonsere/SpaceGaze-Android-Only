@@ -24,10 +24,11 @@ import com.example.spacegaze.ui.theme.SpaceGazeTheme
 
 @Composable
 fun LaunchScreen(
-    launchName: String,
+    launchId: String,
     onReturn: () -> Unit
 ) {
-    Title(launchName,onReturn)
+
+    Title(launchId,onReturn)
 }
 
 @Composable
@@ -65,4 +66,4 @@ fun DefaultPreview() {
         )
     }
 }
- */
+*/

@@ -21,10 +21,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.spacegaze.R
 import com.example.spacegaze.ui.SpaceGazeViewModel
 
@@ -89,13 +91,11 @@ fun SpaceGazeBottomBar(
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-fun SpaceGazeApp(modifier: Modifier = Modifier) {
+fun SpaceGazeApp(
+    modifier: Modifier = Modifier,
+) {
     val spaceGazeViewModel: SpaceGazeViewModel = viewModel(factory = SpaceGazeViewModel.Factory)
     val navController = rememberNavController()
-    val backStackEntry by navController.currentBackStackEntryAsState()
-    val currentScreen = SpaceGazeScreen.valueOf(
-        backStackEntry?.destination?.route ?: SpaceGazeScreen.Home.name
-    )
 
     Scaffold(
         bottomBar = {
@@ -117,13 +117,21 @@ fun SpaceGazeApp(modifier: Modifier = Modifier) {
             composable(route = SpaceGazeScreen.Home.name) {
                 HomeScreen(
                     spaceGazeUiState = spaceGazeViewModel.spaceGazeUiState,
-                    onViewLaunch = { navController.navigate(SpaceGazeScreen.Launch.name) }
+                    viewModel = spaceGazeViewModel,
+                    onViewLaunch = { launchId ->
+                        navController.navigate("${SpaceGazeScreen.Launch.name}/$launchId") }
                 )
             }
-
-            composable(route = SpaceGazeScreen.Launch.name) {
+            val launchIdArgument = "launchId"
+            composable(
+                route = SpaceGazeScreen.Launch.name + "/{$launchIdArgument}",
+                arguments = listOf(navArgument(launchIdArgument) {type = NavType.StringType})
+            ) { backStackEntry ->
+                val launchId = backStackEntry.arguments?.getString(launchIdArgument)
+                    ?: error("launchIdArgument can not be null")
+                val launch = launchId
                 LaunchScreen(
-                    "Launch Name",
+                    launch,
                     onReturn = { navController.popBackStack(SpaceGazeScreen.Home.name, inclusive = false) }
                 )
             }
