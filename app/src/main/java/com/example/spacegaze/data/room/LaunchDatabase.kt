@@ -6,7 +6,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.example.spacegaze.model.Launch
 
-@Database(entities = [Launch::class], version = 5)
+@Database(entities = [Launch::class], version = 6)
 abstract class LaunchDatabase : RoomDatabase() {
     abstract fun launchDao(): LaunchDao
 

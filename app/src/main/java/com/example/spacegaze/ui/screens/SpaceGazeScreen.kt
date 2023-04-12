@@ -1,30 +1,26 @@
 package com.example.spacegaze.ui.screens
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.annotation.StringRes
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.RocketLaunch
 import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.icons.rounded.RocketLaunch
-import androidx.compose.material.icons.rounded.Search
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.spacegaze.R
@@ -93,10 +89,9 @@ fun SpaceGazeBottomBar(
 @Composable
 fun SpaceGazeApp(
     modifier: Modifier = Modifier,
+    spaceGazeViewModel: SpaceGazeViewModel = viewModel(factory = SpaceGazeViewModel.Factory)
 ) {
-    val spaceGazeViewModel: SpaceGazeViewModel = viewModel(factory = SpaceGazeViewModel.Factory)
     val navController = rememberNavController()
-
     Scaffold(
         bottomBar = {
             SpaceGazeBottomBar(
@@ -129,11 +124,14 @@ fun SpaceGazeApp(
             ) { backStackEntry ->
                 val launchId = backStackEntry.arguments?.getString(launchIdArgument)
                     ?: error("launchIdArgument can not be null")
-                val launch = launchId
-                LaunchScreen(
-                    launch,
-                    onReturn = { navController.popBackStack(SpaceGazeScreen.Home.name, inclusive = false) }
-                )
+                //val launch = spaceGazeViewModel.getLaunchById(launchId)
+                val launch by spaceGazeViewModel.getLaunchById(launchId).collectAsState(emptyList())
+                Log.d("TAG", launch.toString())
+                if (launch.isNotEmpty()) {
+                    LaunchScreen(
+                        launch[0]
+                    ) { navController.popBackStack(SpaceGazeScreen.Home.name, inclusive = false) }
+                }
             }
         }
     }

@@ -26,7 +26,6 @@ import java.io.IOException
 
 private const val TAG = "ViewModel"
 sealed interface SpaceGazeUiState {
-    data class NextLaunch(val nextLaunch: Launch) : SpaceGazeUiState
     data class UpcomingLaunches(val launchList: Flow<List<Launch>>) : SpaceGazeUiState
     object Success : SpaceGazeUiState
     object Error : SpaceGazeUiState
@@ -38,6 +37,7 @@ class SpaceGazeViewModel(private val launchLibraryRepository: LaunchLibraryRepos
         private set
 
     init {
+        //getUpcomingLaunches()
         try {
             val launches = launchDao.getUpcomingLaunches()
             spaceGazeUiState = SpaceGazeUiState.UpcomingLaunches(launches)
@@ -78,6 +78,9 @@ class SpaceGazeViewModel(private val launchLibraryRepository: LaunchLibraryRepos
     fun getPreviousLaunches() {
 
     }
+
+    fun getLaunchById(id: String) : Flow<List<Launch>> = launchDao.getLaunchById(id)
+
 
     companion object {
         val Factory: ViewModelProvider.Factory = viewModelFactory {

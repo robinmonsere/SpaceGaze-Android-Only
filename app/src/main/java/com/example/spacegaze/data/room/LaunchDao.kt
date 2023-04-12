@@ -14,7 +14,7 @@ interface LaunchDao {
             where id = :id
         """
     )
-    fun getLaunchById(id: String) : Launch
+    fun getLaunchById(id: String) : Flow<List<Launch>>
 
     @Query(
         """

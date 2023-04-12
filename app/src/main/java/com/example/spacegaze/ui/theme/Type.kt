@@ -1,6 +1,8 @@
 package com.example.spacegaze.ui.theme
 
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Typography
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -18,9 +20,15 @@ val Calibri = FontFamily(
 // Set of Material typography styles to start with
 val Typography = Typography(
     body1 = TextStyle(
-        fontFamily = FontFamily.Default,
+        fontFamily = Calibri,
         fontWeight = FontWeight.Normal,
-        fontSize = 16.sp
+        fontSize = 16.sp,
+    ),
+    body2 = TextStyle(
+        fontFamily = Calibri,
+        fontWeight = FontWeight.Bold,
+        fontSize = 20.sp,
+        color = Color.White
     ),
     h1 = TextStyle(
         fontFamily = Calibri,
@@ -35,7 +43,8 @@ val Typography = Typography(
     h3 = TextStyle(
         fontFamily = Calibri,
         fontWeight = FontWeight.Bold,
-        fontSize = 20.sp
+        fontSize = 20.sp,
+        color = Color.White
     ),
 
     /* Other default text styles to override

@@ -6,5 +6,8 @@
     <string name="seconds">Secs</string>
     <string name="scheduled">Scheduled</string>
     <string name="recent">Recent</string>
+    <string name="time">Time</string>
+    <string name="date">Date</string>
+    <string name="status">Status</string>
     <string name="view_launch">View launch ></string>
 </resources>

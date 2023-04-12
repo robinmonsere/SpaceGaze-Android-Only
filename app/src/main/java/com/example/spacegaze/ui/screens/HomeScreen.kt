@@ -46,12 +46,10 @@ fun HomeScreen(
                     NextLaunch(launches[0], onViewLaunch)
                     val removedFirst = launches.drop(1)
                     ScheduledLaunches(removedFirst, onViewLaunch)
-                    RecentLaunches(launches)
+                    RecentLaunches(launches, onViewLaunch)
                 }
             }
-            else -> {
-                Log.d(TAG, "ELSE AAA")
-            }
+            else -> {}
         }
     }
 }
@@ -137,7 +135,7 @@ fun ScheduledLaunches (
             modifier.background(MaterialTheme.colors.background)
         ) {
             items(items = LaunchList) { launch ->
-                CardItem(launch)
+                CardItem(launch, onViewLaunch)
             }
         }
     }
@@ -146,6 +144,7 @@ fun ScheduledLaunches (
 @Composable
 fun CardItem(
     launch: Launch,
+    onViewLaunch: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val(time, date) = getTimeCleaned(launch.net)
@@ -154,17 +153,18 @@ fun CardItem(
             .padding(end = 10.dp)
             .background(MaterialTheme.colors.surface, shape = RoundedCornerShape(16.dp))
             .width(300.dp)
-            .height(150.dp),
+            .height(150.dp)
+            .padding(10.dp)
+            .clickable { onViewLaunch(launch.id) },
     ) {
-        Row(
-            modifier.padding(10.dp)
-        ) {
-            Column() {
-                launch.mission?.let { Text(text = it) }
-                launch.lspName?.let { Text(text = it, color = ExtendedTheme.colors.secondaryOnSurface) }
-                Spacer(
-                    modifier.height(50.dp)
-                )
+            Column(
+                modifier.fillMaxHeight(),
+                verticalArrangement = Arrangement.SpaceBetween
+            ) {
+                Column() {
+                    launch.mission?.name?.let { Text(text = it) }
+                    launch.lsp?.name?.let { Text(text = it, color = ExtendedTheme.colors.secondaryOnSurface) }
+                }
                 Row(
                     modifier
                         .height(IntrinsicSize.Min)
@@ -185,14 +185,13 @@ fun CardItem(
                     }
                 }
             }
-        }
-
     }
 }
 
 @Composable
 fun RecentLaunches(
     LaunchList: List<Launch>,
+    onViewLaunch: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column() {
@@ -204,7 +203,7 @@ fun RecentLaunches(
             modifier.background(MaterialTheme.colors.background)
         ) {
             items(items = LaunchList) { launch ->
-                CardItem(launch)
+                CardItem(launch, onViewLaunch)
             }
         }
     }
