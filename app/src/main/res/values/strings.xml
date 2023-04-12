@@ -9,5 +9,8 @@
     <string name="time">Time</string>
     <string name="date">Date</string>
     <string name="status">Status</string>
+    <string name="launcher_photo">Launcher Photo</string>
     <string name="view_launch">View launch ></string>
+    <string name="expand_less">Expand less></string>
+    <string name="expand_more">Expand more></string>
 </resources>

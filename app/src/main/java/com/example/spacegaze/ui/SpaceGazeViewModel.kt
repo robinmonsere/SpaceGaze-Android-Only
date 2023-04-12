@@ -16,9 +16,12 @@ import com.example.spacegaze.data.LaunchLibraryRepository
 import com.example.spacegaze.data.room.LaunchDao
 import com.example.spacegaze.model.Launch
 import com.example.spacegaze.model.LaunchList
+import com.jakewharton.threetenabp.AndroidThreeTen.init
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import retrofit2.HttpException
@@ -36,17 +39,45 @@ class SpaceGazeViewModel(private val launchLibraryRepository: LaunchLibraryRepos
     var spaceGazeUiState: SpaceGazeUiState by mutableStateOf(SpaceGazeUiState.Loading)
         private set
 
+
+    init {
+        getUpcomingLaunches()
+    }
+
+    private fun getUpcomingLaunches() {
+        viewModelScope.launch {
+            val launches = launchDao.getUpcomingLaunches()
+            if (!launches.firstOrNull().isNullOrEmpty()) {
+                spaceGazeUiState = SpaceGazeUiState.UpcomingLaunches(launches)
+            } else {
+                try {
+                    getUpcomingLaunchesApi()
+                } catch (e: Exception) {
+                    spaceGazeUiState = SpaceGazeUiState.Error
+                    Log.e(TAG, "Error getting upcoming launches", e)
+                }
+            }
+        }
+    }
+
+    /*
     init {
         //getUpcomingLaunches()
         try {
             val launches = launchDao.getUpcomingLaunches()
+            if (launches.isNullOrEmpty()) {
+                getUpcomingLaunches()
+            }
             spaceGazeUiState = SpaceGazeUiState.UpcomingLaunches(launches)
             Log.d(TAG, "Launches are saved in UI state")
             Log.d(TAG, spaceGazeUiState.toString() )
         } catch (e: Exception) {
+            Log.e(TAG, e.toString())
             SpaceGazeUiState.Error
         }
     }
+
+     */
     fun getUpcomingLaunchesLocal() {
         SpaceGazeUiState.UpcomingLaunches(launchDao.getUpcomingLaunches())
     }
@@ -61,17 +92,21 @@ class SpaceGazeViewModel(private val launchLibraryRepository: LaunchLibraryRepos
         }
     }
 
-    private fun getUpcomingLaunches() {
+    private fun getUpcomingLaunchesApi() {
         viewModelScope.launch {
             try {
                 Log.d(TAG, "Getting launches")
                 val launches = launchLibraryRepository.getUpcomingLaunches()
                 saveToDb(launches)
+                getUpcomingLaunches()
             } catch (e: IOException) {
+                Log.e(TAG, "There was an IOexception with retrieving the launches")
                 SpaceGazeUiState.Error
             } catch (e: HttpException) {
+                Log.e(TAG, "There was an HttpException with retrieving the launches")
                 SpaceGazeUiState.Error
             }
+
         }
     }
 

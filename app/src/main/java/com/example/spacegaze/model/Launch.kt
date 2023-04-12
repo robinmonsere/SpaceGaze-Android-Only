@@ -30,6 +30,9 @@ data class Launch(
     val rocket: Rocket,
     @Embedded("mission_")
     val mission: Mission?,
+    @Embedded("pad_")
+    val pad: Pad?,
+    val image: String?,
     var isUpcoming: Boolean = false
 )
 
@@ -69,5 +72,21 @@ data class RocketConfiguration(
 data class Mission(
     val name: String?,
     val description: String?,
+)
+
+@Entity
+@Serializable
+data class Pad(
+    val name: String?,
+    @SerialName("map_url")
+    val mapUrl: String?,
+    @Embedded("loc_")
+    val location: Location,
+)
+
+@Entity
+@Serializable
+data class Location(
+    val name: String?
 )
 

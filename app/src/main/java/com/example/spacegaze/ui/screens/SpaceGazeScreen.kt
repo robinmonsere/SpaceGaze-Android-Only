@@ -129,8 +129,9 @@ fun SpaceGazeApp(
                 Log.d("TAG", launch.toString())
                 if (launch.isNotEmpty()) {
                     LaunchScreen(
-                        launch[0]
-                    ) { navController.popBackStack(SpaceGazeScreen.Home.name, inclusive = false) }
+                        launch[0],
+                        onReturn = { navController.popBackStack(SpaceGazeScreen.Home.name, inclusive = false) }
+                    )
                 }
             }
         }
