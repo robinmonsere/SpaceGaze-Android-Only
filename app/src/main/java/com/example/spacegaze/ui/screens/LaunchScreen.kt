@@ -1,6 +1,9 @@
 package com.example.spacegaze.ui.screens
 
 import androidx.annotation.StringRes
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -40,6 +43,8 @@ import com.example.spacegaze.util.getTimeCleaned
 fun LaunchScreen(
     launch: Launch,
     onReturn: () -> Unit,
+    onOpenMaps: (String) -> Unit,
+    onAddToCalendar: (Launch) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -47,8 +52,24 @@ fun LaunchScreen(
     ) {
         Title(launch.rocket.configuration?.name,onReturn)
         ImageAndInfo(launch)
+        MapLink(onOpenMaps, onAddToCalendar, launch)
+    }
+}
+
+@Composable
+fun MapLink(
+    onOpenMaps: (String) -> Unit,
+    onAddToCalendar: (Launch) -> Unit,
+    launch: Launch
+) {
+    Text("Launch Pad")
+    Button(onClick = { launch.pad?.mapUrl?.let { onOpenMaps(it) } }) {
+        Text("View launch location")
     }
 
+    Button(onClick = { onAddToCalendar(launch) }) {
+        Text("Add a reminder to your calendar")
+    }
 }
 
 @Composable
@@ -58,34 +79,45 @@ fun ImageAndInfo(
 ) {
     var expanded by remember { mutableStateOf(false) }
     val(time, date) = getTimeCleaned(launch.net)
-    Row() {
-        launch.mission?.name?.let {
-            Text(it,
-                modifier
-                    .padding(top = 10.dp)
-                    .clickable { expanded = !expanded },
-                style = MaterialTheme.typography.h2) }
-        IconToggleButton(
-            checked = expanded,
-            onCheckedChange = { checked -> expanded = checked },
 
-        ) {
-            if (expanded) {
-                Icon(
-                    imageVector = Icons.Rounded.ExpandLess,
-                    contentDescription = stringResource(R.string.expand_less),
-                )
-            } else {
-                Icon(
-                    imageVector = Icons.Rounded.ExpandMore,
-                    contentDescription = stringResource(R.string.expand_more)
-                )
+    Column(
+        modifier.animateContentSize(
+            animationSpec = spring(
+                dampingRatio = Spring.DampingRatioLowBouncy,
+                stiffness = Spring.StiffnessMediumLow
+            )
+        )
+    ) {
+        Row() {
+            launch.mission?.name?.let {
+                Text(it,
+                    modifier
+                        .padding(top = 10.dp)
+                        .clickable { expanded = !expanded },
+                    style = MaterialTheme.typography.h2) }
+            IconToggleButton(
+                checked = expanded,
+                onCheckedChange = { checked -> expanded = checked },
+
+                ) {
+                if (expanded) {
+                    Icon(
+                        imageVector = Icons.Rounded.ExpandLess,
+                        contentDescription = stringResource(R.string.expand_less),
+                    )
+                } else {
+                    Icon(
+                        imageVector = Icons.Rounded.ExpandMore,
+                        contentDescription = stringResource(R.string.expand_more)
+                    )
+                }
             }
         }
+        if (expanded) {
+            launch.mission?.description?.let { Text(it, modifier.padding(bottom = 10.dp)) }
+        }
     }
-    if (expanded) {
-        launch.mission?.description?.let { Text(it, modifier.padding(bottom = 10.dp)) }
-    }
+
      Box(
          modifier
              .padding(bottom = 10.dp)
@@ -165,7 +197,6 @@ fun Title(
             )
         }
     }
-
 }
 
 /*

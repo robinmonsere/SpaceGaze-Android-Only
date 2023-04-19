@@ -70,7 +70,7 @@ fun NextLaunch(
     }
 
     Column {
-        Text(launch.name, modifier.padding(bottom = 5.dp), style = MaterialTheme.typography.h1)
+        launch.mission?.name?.let { Text(it, modifier.padding(bottom = 5.dp), style = MaterialTheme.typography.h1) }
         Text(
             stringResource(R.string.view_launch),
             modifier

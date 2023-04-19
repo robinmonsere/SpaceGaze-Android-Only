@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">SpaceGaze</string>
     <string name="back_button">Back</string>
+    <string name="home">home</string>
     <string name="hours">Hours</string>
     <string name="minutes">Mins</string>
     <string name="seconds">Secs</string>
@@ -13,4 +14,8 @@
     <string name="view_launch">View launch ></string>
     <string name="expand_less">Expand less></string>
     <string name="expand_more">Expand more></string>
+    <string name="open_with">Open map link with: ></string>
+    <string name="active">Active</string>
+    <string name="inactive">Inactive</string>
+    <string name="space_station">Space Stations</string>
 </resources>

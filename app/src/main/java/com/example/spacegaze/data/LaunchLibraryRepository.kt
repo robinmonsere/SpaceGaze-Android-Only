@@ -1,10 +1,12 @@
 package com.example.spacegaze.data
 
 import com.example.spacegaze.model.LaunchList
+import com.example.spacegaze.model.SpaceStationList
 import com.example.spacegaze.network.LaunchLibraryApiService
 
 interface LaunchLibraryRepository {
     suspend fun getUpcomingLaunches(): LaunchList
+    suspend fun getSpaceStations(): SpaceStationList
 }
 
 class NetworkLaunchLibraryRepository(
@@ -17,4 +19,6 @@ class NetworkLaunchLibraryRepository(
         }
         return upcomingLaunches
     }
+
+    override suspend fun getSpaceStations(): SpaceStationList = LaunchLibraryApiService.getSpaceStations()
 }
