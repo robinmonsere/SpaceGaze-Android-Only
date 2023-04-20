@@ -49,10 +49,10 @@ fun SpaceStationScreen(
                     .weight(1f)
                     .bottomBorder(2.dp, ExtendedTheme.colors.accentColor)
                     .padding(bottom = 7.dp)
-                    .clickable { isActive = !isActive }
+                    .clickable { isActive = true }
                 else modifier
                     .weight(1f)
-                    .clickable { isActive = !isActive },
+                    .clickable { isActive = true },
                 textAlign =  TextAlign.Center,
                 style = MaterialTheme.typography.h2
             )
@@ -62,10 +62,10 @@ fun SpaceStationScreen(
                     .weight(1f)
                     .bottomBorder(2.dp, ExtendedTheme.colors.accentColor)
                     .padding(bottom = 7.dp)
-                    .clickable { isActive = !isActive }
+                    .clickable { isActive = false }
                 else modifier
                     .weight(1f)
-                    .clickable { isActive = !isActive },
+                    .clickable { isActive = false },
                 textAlign =  TextAlign.Center,
                 style = MaterialTheme.typography.h2
             )

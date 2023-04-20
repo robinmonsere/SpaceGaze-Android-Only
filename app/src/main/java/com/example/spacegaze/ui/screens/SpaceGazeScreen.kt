@@ -46,8 +46,8 @@ enum class SpaceGazeScreen {
     SpaceStation
 
 }
-private const val TAG = "SpaceGazeScreen"
 
+private const val TAG = "SpaceGazeScreen"
 
 @Composable
 fun SpaceGazeBottomBar(

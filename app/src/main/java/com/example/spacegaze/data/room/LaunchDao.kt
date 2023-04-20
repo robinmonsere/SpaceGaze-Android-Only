@@ -1,6 +1,7 @@
 package com.example.spacegaze.data.room
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import com.example.spacegaze.model.Launch
@@ -23,6 +24,13 @@ interface LaunchDao {
         """
     )
     fun getUpcomingLaunches() : Flow<List<Launch>>
+
+    @Query(
+        """
+            DELETE FROM launches
+        """
+    )
+    fun clearLaunches()
 
     @Insert
     fun insertLaunch(launch: Launch)
