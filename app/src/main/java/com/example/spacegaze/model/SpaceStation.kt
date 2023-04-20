@@ -7,7 +7,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class SpaceStationList(
     @SerialName("results")
-    val launches: List<Launch>,
+    val spaceStations: List<SpaceStation>,
 )
 
 @Serializable

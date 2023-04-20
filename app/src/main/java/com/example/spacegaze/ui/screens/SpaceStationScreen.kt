@@ -6,6 +6,7 @@ import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -20,15 +21,24 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.spacegaze.R
+import com.example.spacegaze.ui.SpaceGazeViewModel
+import com.example.spacegaze.ui.SpaceStationViewModel
 import com.example.spacegaze.ui.theme.ExtendedTheme
+import kotlinx.coroutines.launch
 
 private const val TAG = "SpaceStationScreen"
 
 @Composable
 fun SpaceStationScreen(
+    viewModel: SpaceStationViewModel,
     modifier: Modifier = Modifier
 ) {
+   when (viewModel)
+
+
     var isActive by remember { mutableStateOf(true) }
     // header with Active | Inactive
     // start with viewmodel is active -> show active
@@ -70,9 +80,18 @@ fun SpaceStationScreen(
                 style = MaterialTheme.typography.h2
             )
         }
-       // LazyColumn()
+       LazyColumn() {
+           items(items = spaceStations) { station ->
+               CardItem(station, onViewLaunch)
+           }
+       }
     }
-    
+}
+
+fun CardItem(
+
+) {
+
 }
 
 fun Modifier.bottomBorder(strokeWidth: Dp, color: Color) = composed(

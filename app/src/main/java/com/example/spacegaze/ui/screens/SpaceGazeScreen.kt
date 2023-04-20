@@ -2,26 +2,43 @@ package com.example.spacegaze.ui.screens
 
 import android.annotation.SuppressLint
 import android.content.ActivityNotFoundException
+import android.content.ClipDescription
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.provider.CalendarContract
 import android.util.Log
 import androidx.annotation.StringRes
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.SatelliteAlt
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material.icons.outlined.SatelliteAlt
+import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.icons.rounded.RocketLaunch
 import androidx.compose.material.icons.rounded.SatelliteAlt
+import androidx.compose.material.icons.rounded.Settings
+import androidx.compose.material.icons.sharp.SatelliteAlt
+import androidx.compose.material.icons.twotone.SatelliteAlt
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -35,6 +52,7 @@ import androidx.navigation.navArgument
 import com.example.spacegaze.R
 import com.example.spacegaze.model.Launch
 import com.example.spacegaze.ui.SpaceGazeViewModel
+import com.example.spacegaze.ui.SpaceStationViewModel
 import com.example.spacegaze.ui.theme.AccentRed
 import org.threeten.bp.ZonedDateTime
 import java.sql.Timestamp
@@ -43,7 +61,8 @@ import java.util.*
 enum class SpaceGazeScreen {
     Home,
     Launch,
-    SpaceStation
+    SpaceStation,
+    Settings,
 
 }
 
@@ -52,28 +71,79 @@ private const val TAG = "SpaceGazeScreen"
 @Composable
 fun SpaceGazeBottomBar(
     onHome: () -> Unit,
-    onLaunch: () -> Unit,
+    onSpaceStation: () -> Unit,
+    onSettings: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     BottomAppBar(
         modifier.clip(RoundedCornerShape(15.dp, 15.dp, 0.dp, 0.dp)),
     ) {
-        Row() {
-            IconButton(
-                onClick = onHome
-            ) {
-                Icon(
-                    imageVector = Icons.Rounded.Home,
-                    contentDescription = stringResource(R.string.back_button)
-                )
-            }
-            IconButton(onClick = onLaunch ) {
-                Icon(
-                    imageVector = Icons.Rounded.SatelliteAlt,
-                    contentDescription = stringResource(R.string.space_station)
-                )
-            }
+        Row(
+            modifier.fillMaxWidth(),
+            Arrangement.SpaceAround
+        ) {
+            var isSettingsSelected by remember { mutableStateOf(false) }
+            var isSpaceStationSelected by remember { mutableStateOf(false) }
+            var isHomeSelected by remember { mutableStateOf(true) }
+
+            ToggleIconButtonCustom(
+                selectedIcon = Icons.Rounded.Home,
+                unselectedIcon = Icons.Outlined.Home,
+                isSelected = isHomeSelected,
+                onClick = {
+                    isHomeSelected = true
+                    isSpaceStationSelected = false
+                    isSettingsSelected = false
+                    onHome()
+                },
+                contentDescription = R.string.home
+            )
+            ToggleIconButtonCustom(
+                selectedIcon = Icons.Filled.SatelliteAlt,
+                unselectedIcon = Icons.Outlined.SatelliteAlt,
+                isSelected = isSpaceStationSelected,
+                onClick = {
+                    isSpaceStationSelected = true
+                    isHomeSelected = false
+                    isSettingsSelected = false
+                    onSpaceStation()
+                },
+                contentDescription = R.string.space_station
+            )
+            ToggleIconButtonCustom(
+                selectedIcon = Icons.Filled.Settings,
+                unselectedIcon = Icons.Outlined.Settings,
+                isSelected = isSettingsSelected,
+                onClick = {
+                    isSpaceStationSelected = false
+                    isHomeSelected = false
+                    isSettingsSelected = true
+                    onSettings()
+                },
+                contentDescription = R.string.settings
+            )
         }
+    }
+}
+
+@Composable
+fun ToggleIconButtonCustom(
+    selectedIcon: ImageVector,
+    unselectedIcon: ImageVector,
+    isSelected: Boolean,
+    contentDescription: Int,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    IconButton(
+        modifier = modifier,
+        onClick = onClick
+    ) {
+        Icon(
+            imageVector = if (isSelected) selectedIcon else unselectedIcon,
+            contentDescription = stringResource(contentDescription),
+            modifier = Modifier.size(30.dp)
+        )
     }
 }
 
@@ -82,7 +152,8 @@ fun SpaceGazeBottomBar(
 @Composable
 fun SpaceGazeApp(
     modifier: Modifier = Modifier,
-    spaceGazeViewModel: SpaceGazeViewModel = viewModel(factory = SpaceGazeViewModel.Factory)
+    spaceGazeViewModel: SpaceGazeViewModel = viewModel(factory = SpaceGazeViewModel.Factory),
+    spaceStationViewModel: SpaceStationViewModel = viewModel(factory = SpaceStationViewModel.Factory)
 ) {
     val navController = rememberNavController()
     Scaffold(
@@ -91,8 +162,11 @@ fun SpaceGazeApp(
                 onHome = {
                     navController.popBackStack(SpaceGazeScreen.Home.name, inclusive = false)
                 },
-                onLaunch = {
+                onSpaceStation = {
                     navController.navigate(SpaceGazeScreen.SpaceStation.name)
+                },
+                onSettings = {
+                    navController.navigate(SpaceGazeScreen.Settings.name)
                 }
             )
         }
@@ -133,7 +207,14 @@ fun SpaceGazeApp(
             composable(
                 route = SpaceGazeScreen.SpaceStation.name,
             ) {
-                SpaceStationScreen()
+                SpaceStationScreen(
+                    viewModel = spaceStationViewModel
+                )
+            }
+            composable(
+                route = SpaceGazeScreen.Settings.name,
+            ) {
+                SettingsScreen()
             }
         }
     }

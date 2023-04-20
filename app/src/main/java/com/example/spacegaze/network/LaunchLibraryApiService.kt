@@ -9,6 +9,6 @@ interface LaunchLibraryApiService {
     @GET("launch/upcoming?limit=10")
     suspend fun getUpcomingLaunches(): LaunchList
 
-    @GET("launch/upcoming?limit=10")
+    @GET("spacestation/?limit=15")
     suspend fun getSpaceStations(): SpaceStationList
 }
