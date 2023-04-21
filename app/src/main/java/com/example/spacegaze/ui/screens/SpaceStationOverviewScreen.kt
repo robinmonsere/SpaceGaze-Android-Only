@@ -134,21 +134,24 @@ fun SpaceStationCardItem(
 
     ) {
         Column() {
-            Column(
-                modifier.padding(15.dp)
+            Row(
+                modifier
+                    .padding(15.dp)
+                    .height(IntrinsicSize.Min)
             ) {
+                Box(
+                    modifier
+                        .padding(end = 5.dp)
+                        .background(
+                            color = ExtendedTheme.colors.accentColor,
+                            shape = RoundedCornerShape(5.dp)
+                        )
+                        .width(2.dp)
+                        .fillMaxHeight(),
+                )
                 Text(
                     station.name,
                     style = MaterialTheme.typography.h2,
-                )
-                Text(
-                    stringResource(R.string.view_space_station),
-                    modifier
-                        .clickable() {
-                            // TODO
-                        },
-                    color = ExtendedTheme.colors.secondaryOnSurface,
-                    style = MaterialTheme.typography.h2
                 )
             }
             Box(
@@ -168,7 +171,7 @@ fun SpaceStationCardItem(
                     contentScale = ContentScale.Crop,
                     modifier = modifier
                         .fillMaxSize()
-                        .clip(shape = RoundedCornerShape(10.dp)),
+                        .clip(shape = RoundedCornerShape(0.dp, 0.dp, 10.dp, 10.dp)),
                 )
             }
         }

@@ -1,5 +1,6 @@
 package com.example.spacegaze.ui.theme
 
+import android.content.res.Resources.Theme
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Typography
 import androidx.compose.ui.graphics.Color
@@ -45,6 +46,11 @@ val Typography = Typography(
         fontWeight = FontWeight.Bold,
         fontSize = 20.sp,
         color = Color.White
+    ),
+    subtitle1 = TextStyle(
+        fontFamily = Calibri,
+        fontWeight = FontWeight.Normal,
+        fontSize = 16.sp,
     ),
 
     /* Other default text styles to override

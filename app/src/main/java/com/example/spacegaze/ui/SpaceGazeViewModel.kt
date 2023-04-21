@@ -51,7 +51,7 @@ class SpaceGazeViewModel(private val launchLibraryRepository: LaunchLibraryRepos
     init {
         Log.d(TAG, "Init")
         viewModelScope.launch {
-            //getUpcomingLaunchesApi()
+            getUpcomingLaunchesApi()
             getUpcomingLaunchesLocal()
         }
     }

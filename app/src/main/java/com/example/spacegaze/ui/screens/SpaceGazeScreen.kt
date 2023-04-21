@@ -164,7 +164,7 @@ fun SpaceGazeApp(
         NavHost(
             navController = navController,
             startDestination = SpaceGazeScreen.Home.name,
-            modifier = modifier.padding(start = 20.dp, top= 20.dp),
+            modifier = modifier.padding(start = 20.dp, top= 10.dp),
         ) {
             composable(route = SpaceGazeScreen.Home.name) {
                 HomeScreen(

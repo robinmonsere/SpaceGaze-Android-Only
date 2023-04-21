@@ -160,8 +160,8 @@ fun InfoBlock(
     Column(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(stringResource(type), style = MaterialTheme.typography.body1, color = ExtendedTheme.colors.secondaryOnSurface)
-        Text(value, style = MaterialTheme.typography.body2)
+        Text(stringResource(type), style = MaterialTheme.typography.body1, color = MaterialTheme.colors.secondary)
+        Text(value, style = MaterialTheme.typography.body2, color = MaterialTheme.colors.onBackground)
     }
 }
 

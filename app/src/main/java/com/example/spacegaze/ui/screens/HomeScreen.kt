@@ -1,5 +1,6 @@
 package com.example.spacegaze.ui.screens
 
+import android.content.res.Resources.Theme
 import android.util.Log
 import androidx.annotation.StringRes
 import androidx.compose.foundation.background
@@ -79,7 +80,7 @@ fun NextLaunch(
                     onViewLaunch(launch.id)
                 }
                 .padding(bottom = 5.dp),
-            color = ExtendedTheme.colors.secondaryOnSurface,
+            color = MaterialTheme.colors.secondary,
             style = MaterialTheme.typography.h2
         )
         Row(
@@ -111,6 +112,7 @@ fun TimeBlock(
             Text(
                 text = time,
                 style = MaterialTheme.typography.h3,
+                color = MaterialTheme.colors.onBackground,
             )
         }
         Spacer(modifier.height(10.dp))
@@ -164,7 +166,7 @@ private fun LaunchCardItem(
             ) {
                 Column() {
                     launch.mission?.name?.let { Text(text = it) }
-                    launch.lsp?.name?.let { Text(text = it, color = ExtendedTheme.colors.secondaryOnSurface) }
+                    launch.lsp?.name?.let { Text(text = it, color = MaterialTheme.colors.secondary) }
                 }
                 Row(
                     modifier
