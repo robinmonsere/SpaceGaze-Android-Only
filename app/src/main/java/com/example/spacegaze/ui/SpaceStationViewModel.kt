@@ -1,5 +1,6 @@
 package com.example.spacegaze.ui
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -12,13 +13,18 @@ import com.example.spacegaze.SpaceGazeApplication
 import com.example.spacegaze.data.LaunchLibraryRepository
 import com.example.spacegaze.data.room.LaunchDao
 import com.example.spacegaze.model.Launch
+import com.example.spacegaze.model.LaunchList
 import com.example.spacegaze.model.SpaceStation
 import com.example.spacegaze.model.SpaceStationList
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+
+private const val TAG = "ViewModel"
 
 sealed interface SpaceStationUiState {
-    data class SpaceStations(val SpaceStationList: SpaceStationList) : SpaceStationUiState
+    data class SpaceStations(val ActiveSpaceStationList: List<SpaceStation>, val InActiveSpaceStationList: List<SpaceStation>) : SpaceStationUiState
     object Loading : SpaceStationUiState
 }
 
@@ -31,10 +37,31 @@ class SpaceStationViewModel(private val launchLibraryRepository: LaunchLibraryRe
         getSpaceStations()
     }
 
-    fun getSpaceStations() {
+    fun getStationById(id: Int): Flow<SpaceStation> {
+        return launchDao.getStationFromId(id)
+    }
+    private fun getSpaceStations() {
        viewModelScope.launch() {
-            spaceStationUiState = SpaceStationUiState.SpaceStations(launchLibraryRepository.getSpaceStations())
+           withContext(Dispatchers.IO) {
+               val stations = launchLibraryRepository.getSpaceStations()
+               saveToDb(stations)
+               val activeStations = launchDao.getActiveStations()
+               val inActiveStations = launchDao.getInActiveStations()
+               spaceStationUiState = SpaceStationUiState.SpaceStations(activeStations, inActiveStations)
+           }
        }
+    }
+
+    private fun saveToDb(spaceStationList: SpaceStationList) {
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                launchDao.clearStations()
+                spaceStationList.spaceStations.forEach { launch ->
+                    launchDao.insertSpaceStation(launch)
+                }
+            }
+        }
+        Log.d(TAG, "Updated the Database (Space station)")
     }
 
     companion object {

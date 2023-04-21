@@ -2,13 +2,11 @@ package com.example.spacegaze.ui.screens
 
 import android.annotation.SuppressLint
 import android.content.ActivityNotFoundException
-import android.content.ClipDescription
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.provider.CalendarContract
 import android.util.Log
-import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,18 +15,12 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.SatelliteAlt
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.SatelliteAlt
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.rounded.Home
-import androidx.compose.material.icons.rounded.RocketLaunch
-import androidx.compose.material.icons.rounded.SatelliteAlt
-import androidx.compose.material.icons.rounded.Settings
-import androidx.compose.material.icons.sharp.SatelliteAlt
-import androidx.compose.material.icons.twotone.SatelliteAlt
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -37,12 +29,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.core.content.ContextCompat.startActivity
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -51,17 +41,17 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.spacegaze.R
 import com.example.spacegaze.model.Launch
+import com.example.spacegaze.model.SpaceStation
 import com.example.spacegaze.ui.SpaceGazeViewModel
 import com.example.spacegaze.ui.SpaceStationViewModel
-import com.example.spacegaze.ui.theme.AccentRed
 import org.threeten.bp.ZonedDateTime
-import java.sql.Timestamp
 import java.util.*
 
 enum class SpaceGazeScreen {
     Home,
     Launch,
     SpaceStation,
+    SpaceStationOverview,
     Settings,
 
 }
@@ -71,7 +61,7 @@ private const val TAG = "SpaceGazeScreen"
 @Composable
 fun SpaceGazeBottomBar(
     onHome: () -> Unit,
-    onSpaceStation: () -> Unit,
+    onSpaceStationOverview: () -> Unit,
     onSettings: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -106,7 +96,7 @@ fun SpaceGazeBottomBar(
                     isSpaceStationSelected = true
                     isHomeSelected = false
                     isSettingsSelected = false
-                    onSpaceStation()
+                    onSpaceStationOverview()
                 },
                 contentDescription = R.string.space_station
             )
@@ -162,8 +152,8 @@ fun SpaceGazeApp(
                 onHome = {
                     navController.popBackStack(SpaceGazeScreen.Home.name, inclusive = false)
                 },
-                onSpaceStation = {
-                    navController.navigate(SpaceGazeScreen.SpaceStation.name)
+                onSpaceStationOverview = {
+                    navController.navigate(SpaceGazeScreen.SpaceStationOverview.name)
                 },
                 onSettings = {
                     navController.navigate(SpaceGazeScreen.Settings.name)
@@ -174,7 +164,7 @@ fun SpaceGazeApp(
         NavHost(
             navController = navController,
             startDestination = SpaceGazeScreen.Home.name,
-            modifier = modifier.padding(start = 20.dp, bottom = 100.dp, top= 20.dp),
+            modifier = modifier.padding(start = 20.dp, top= 20.dp),
         ) {
             composable(route = SpaceGazeScreen.Home.name) {
                 HomeScreen(
@@ -197,19 +187,28 @@ fun SpaceGazeApp(
                     LaunchScreen(
                         launch[0],
                         onReturn = { navController.popBackStack(SpaceGazeScreen.Home.name, inclusive = false) },
-                        onOpenMaps = { location: String ->
-                            openMaps(context, location) },
-                        onAddToCalendar = { launch: Launch ->
-                            addToCalendar(context, launch) }
+                        onOpenMaps = { location: String -> openMaps(context, location) },
+                        onAddToCalendar = { launch: Launch -> addToCalendar(context, launch) }
                     )
                 }
             }
             composable(
-                route = SpaceGazeScreen.SpaceStation.name,
+                route = SpaceGazeScreen.SpaceStationOverview.name,
             ) {
-                SpaceStationScreen(
-                    viewModel = spaceStationViewModel
+                SpaceStationOverviewScreen(
+                    spaceStationUiState = spaceStationViewModel.spaceStationUiState,
+                    onSpaceStation = { stationId -> navController.navigate("${SpaceGazeScreen.SpaceStation.name}/$stationId") }
                 )
+            }
+            val spaceStationArgument = "stationId"
+            composable(
+                route = SpaceGazeScreen.SpaceStation.name+ "/{$spaceStationArgument}",
+                arguments = listOf(navArgument(spaceStationArgument) {type = NavType.StringType})
+            ) {backStackEntry ->
+                val stationId = backStackEntry.arguments?.getString(spaceStationArgument)
+                    ?: error("spaceStationArgument can not be null")
+                val station by spaceStationViewModel.getStationById(stationId.toInt()).collectAsState(null)
+                station?.let { it1 -> SpaceStationScreen(it1) }
             }
             composable(
                 route = SpaceGazeScreen.Settings.name,

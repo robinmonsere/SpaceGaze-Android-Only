@@ -51,7 +51,7 @@ class SpaceGazeViewModel(private val launchLibraryRepository: LaunchLibraryRepos
     init {
         Log.d(TAG, "Init")
         viewModelScope.launch {
-            getUpcomingLaunchesApi()
+            //getUpcomingLaunchesApi()
             getUpcomingLaunchesLocal()
         }
     }
@@ -85,7 +85,6 @@ class SpaceGazeViewModel(private val launchLibraryRepository: LaunchLibraryRepos
                 Log.e(TAG, "There was an HttpException with retrieving the launches")
                 SpaceGazeUiState.Error
             }
-
         }
     }
 

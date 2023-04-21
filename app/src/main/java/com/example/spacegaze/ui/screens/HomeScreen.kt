@@ -35,6 +35,7 @@ fun HomeScreen(
 ) {
     Column(
         modifier
+            .padding(bottom = 100.dp)
             .fillMaxHeight(),
         verticalArrangement = Arrangement.SpaceBetween
     ) {
@@ -135,14 +136,14 @@ fun ScheduledLaunches (
             modifier.background(MaterialTheme.colors.background)
         ) {
             items(items = LaunchList) { launch ->
-                CardItem(launch, onViewLaunch)
+                LaunchCardItem(launch, onViewLaunch)
             }
         }
     }
 }
 
 @Composable
-fun CardItem(
+private fun LaunchCardItem(
     launch: Launch,
     onViewLaunch: (String) -> Unit,
     modifier: Modifier = Modifier
@@ -203,7 +204,7 @@ fun RecentLaunches(
             modifier.background(MaterialTheme.colors.background)
         ) {
             items(items = LaunchList) { launch ->
-                CardItem(launch, onViewLaunch)
+                LaunchCardItem(launch, onViewLaunch)
             }
         }
     }
