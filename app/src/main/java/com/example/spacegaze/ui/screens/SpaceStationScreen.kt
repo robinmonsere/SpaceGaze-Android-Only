@@ -4,6 +4,7 @@ import android.media.audiofx.AudioEffect.Descriptor
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.Icon
@@ -32,14 +33,48 @@ fun SpaceStationScreen(
     modifier: Modifier = Modifier
 ) {
    Column(
-       modifier = modifier.padding(end = 10.dp)
+       modifier = modifier.padding(end = 20.dp, bottom = 60.dp)
    ) {
        Title(spaceStation.name, { onReturn() })
-       SpaceStationImage(spaceStation)
-       Description(spaceStation)
+       LazyColumn() {
+           items(count = 1) {
+               SpaceStationImage(spaceStation)
+               SpaceStationInformation(spaceStation)
+               Description(spaceStation)
+           }
 
+       }
 
    }
+}
+
+@Composable
+fun SpaceStationInformation(
+    spaceStation: SpaceStation,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier
+            .padding(bottom = 10.dp)
+            .background(MaterialTheme.colors.surface, shape = RoundedCornerShape(16.dp))
+            .padding(20.dp)
+            .fillMaxWidth(),
+    ) {
+        Row(
+            modifier
+                .fillMaxWidth()
+                .padding(bottom = 10.dp)
+        ) {
+            InfoBlock(R.string.status,spaceStation.status.name, modifier.weight(1f/2f))
+            InfoBlock(R.string.type, spaceStation.type.name, modifier.weight(1f/2f))
+        }
+        Row(
+            modifier.fillMaxWidth()
+        ) {
+            InfoBlock(R.string.founded,spaceStation.founded, modifier.weight(1f/2f))
+            InfoBlock(R.string.orbit, spaceStation.orbit, modifier.weight(1f/2f))
+        }
+    }
 }
 
 @Composable

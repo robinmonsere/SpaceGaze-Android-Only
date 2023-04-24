@@ -19,6 +19,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
@@ -144,7 +145,6 @@ fun Information(
             Text(stringResource(R.string.add_to_calendar))
             Icon(Icons.Rounded.EditCalendar, stringResource(R.string.add_to_calendar))
         }
-
         Row(
             modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Center
@@ -185,7 +185,7 @@ fun InfoBlock(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(stringResource(type), style = MaterialTheme.typography.body1, color = MaterialTheme.colors.secondary)
-        Text(value ?: stringResource(R.string.unknown), style = MaterialTheme.typography.body2, color = MaterialTheme.colors.onBackground)
+        Text(value ?: stringResource(R.string.unknown), style = MaterialTheme.typography.body2, color = MaterialTheme.colors.onBackground, textAlign = TextAlign.Center)
     }
 }
 

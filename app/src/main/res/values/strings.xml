@@ -13,6 +13,9 @@
     <string name="lsp">Lsp</string>
     <string name="unknown">Unknown</string>
     <string name="status">Status</string>
+    <string name="type">Type</string>
+    <string name="founded">Founded</string>
+    <string name="orbit">Orbit</string>
     <string name="loading">Loading</string>
     <string name="launcher_photo">Launcher Photo</string>
     <string name="station_photo">Station Photo</string>
