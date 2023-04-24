@@ -1,6 +1,7 @@
 package com.example.spacegaze.ui.screens
 
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -31,6 +32,7 @@ import com.example.spacegaze.R
 import com.example.spacegaze.model.SpaceStation
 import com.example.spacegaze.ui.SpaceStationUiState
 import com.example.spacegaze.ui.theme.ExtendedTheme
+import com.example.spacegaze.util.getAsyncImage
 
 private const val TAG = "SpaceStationScreen"
 
@@ -53,7 +55,7 @@ fun SpaceStationOverviewScreen(
         when (spaceStationUiState) {
             is SpaceStationUiState.SpaceStations -> {
                 val spaceStations = if (isActive) spaceStationUiState.ActiveSpaceStationList else spaceStationUiState.InActiveSpaceStationList
-                SpaceStationsList(spaceStations, onSpaceStation)
+                SpaceStationsList(spaceStations.collectAsState(initial = emptyList()).value, onSpaceStation)
             }
             is SpaceStationUiState.Loading -> {
                 Image(
@@ -61,6 +63,7 @@ fun SpaceStationOverviewScreen(
                     stringResource(R.string.loading)
                 )
             }
+            else -> {}
         }
     }
 }
@@ -112,6 +115,7 @@ fun SpaceStationsList(
     spaceStations: List<SpaceStation>,
     onViewSpaceStation: (Int) -> Unit
 ) {
+    Log.d(TAG, spaceStations.toString())
     LazyColumn() {
         items(items = spaceStations) { station ->
             SpaceStationCardItem(station, onViewSpaceStation)
@@ -160,19 +164,7 @@ fun SpaceStationCardItem(
                     .height(200.dp)
 
             ) {
-                AsyncImage(
-                    model = ImageRequest.Builder(context = LocalContext.current)
-                        .data(station.imageUrl)
-                        .crossfade(true)
-                        .build(),
-                    error = painterResource(R.drawable.ic_broken_image),
-                    placeholder = painterResource(R.drawable.loading_img),
-                    contentDescription = stringResource(R.string.station_photo),
-                    contentScale = ContentScale.Crop,
-                    modifier = modifier
-                        .fillMaxSize()
-                        .clip(shape = RoundedCornerShape(0.dp, 0.dp, 10.dp, 10.dp)),
-                )
+                getAsyncImage(url = station.imageUrl, shape = RoundedCornerShape(0.dp, 0.dp, 10.dp, 10.dp), desc = R.string.station_photo)
             }
         }
     }

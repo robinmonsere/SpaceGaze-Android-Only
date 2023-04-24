@@ -1,23 +1,16 @@
 package com.example.spacegaze.ui.screens
 
-import androidx.annotation.StringRes
+
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.filled.ArrowDropUp
-import androidx.compose.material.icons.rounded.ArrowBackIos
-import androidx.compose.material.icons.rounded.Expand
-import androidx.compose.material.icons.rounded.ExpandLess
-import androidx.compose.material.icons.rounded.ExpandMore
+import androidx.compose.material.icons.rounded.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -26,17 +19,15 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.spacegaze.R
+import com.example.spacegaze.data.preview.DataSource
 import com.example.spacegaze.model.Launch
-import com.example.spacegaze.model.Rocket
-import com.example.spacegaze.model.RocketConfiguration
-import com.example.spacegaze.ui.theme.ExtendedTheme
 import com.example.spacegaze.ui.theme.SpaceGazeTheme
+import com.example.spacegaze.util.getAsyncImage
 import com.example.spacegaze.util.getTimeCleaned
 
 @Composable
@@ -50,36 +41,21 @@ fun LaunchScreen(
     Column(
         modifier.padding(end = 20.dp)
     ) {
-        Title(launch.rocket.configuration?.name,onReturn)
-        ImageAndInfo(launch)
-        MapLink(onOpenMaps, onAddToCalendar, launch)
+        LaunchTitle(launch.rocket.configuration?.name,onReturn)
+        NameAndDescription(launch)
+        Image(launch)
+        Information(launch, onOpenMaps, onAddToCalendar)
     }
 }
 
-@Composable
-fun MapLink(
-    onOpenMaps: (String) -> Unit,
-    onAddToCalendar: (Launch) -> Unit,
-    launch: Launch
-) {
-    Text("Launch Pad")
-    Button(onClick = { launch.pad?.mapUrl?.let { onOpenMaps(it) } }) {
-        Text("View launch location")
-    }
-
-    Button(onClick = { onAddToCalendar(launch) }) {
-        Text("Add a reminder to your calendar")
-    }
-}
 
 @Composable
-fun ImageAndInfo(
+fun NameAndDescription(
     launch: Launch,
     modifier: Modifier = Modifier
-) {
+)
+{
     var expanded by remember { mutableStateOf(false) }
-    val(time, date) = getTimeCleaned(launch.net)
-
     Column(
         modifier.animateContentSize(
             animationSpec = spring(
@@ -88,7 +64,7 @@ fun ImageAndInfo(
             )
         )
     ) {
-        Row() {
+        Row {
             launch.mission?.name?.let {
                 Text(it,
                     modifier
@@ -117,56 +93,104 @@ fun ImageAndInfo(
             launch.mission?.description?.let { Text(it, modifier.padding(bottom = 10.dp)) }
         }
     }
+}
 
-     Box(
-         modifier
-             .padding(bottom = 10.dp)
-             .fillMaxWidth()
-             .height(200.dp)
+@Composable
+fun Image(
+    launch: Launch,
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier
+            .padding(bottom = 10.dp)
+            .fillMaxWidth()
+            .height(200.dp)
     ) {
-        AsyncImage(
-            model = ImageRequest.Builder(context = LocalContext.current)
-                .data(launch.image)
-                .crossfade(true)
-                .build(),
-            error = painterResource(R.drawable.ic_broken_image),
-            placeholder = painterResource(R.drawable.loading_img),
-            contentDescription = stringResource(R.string.launcher_photo),
-            contentScale = ContentScale.Crop,
-            modifier = modifier
-                .fillMaxSize()
-                .clip(shape = RoundedCornerShape(10.dp)),
-        )
+        launch.image?.let { getAsyncImage(url = it, shape = RoundedCornerShape(10.dp), desc = R.string.launcher_photo) }
     }
-    Row(
+}
+
+@Composable
+fun Information(
+    launch: Launch,
+    onOpenMaps: (String) -> Unit,
+    onAddToCalendar: (Launch) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val(time, date) = getTimeCleaned(launch.net)
+    Column(
         modifier
             .background(MaterialTheme.colors.surface, shape = RoundedCornerShape(16.dp))
             .padding(20.dp)
             .fillMaxWidth(),
-        Arrangement.SpaceEvenly
     ) {
-        InfoBlock(R.string.time, time)
-        InfoBlock(R.string.date, date)
-        launch.status?.let { InfoBlock(R.string.status, it.abbrev) }
+        Row(
+            modifier
+                .fillMaxWidth()
+                .padding(bottom = 5.dp),
+        ) {
+            InfoBlock(R.string.time, time, modifier.weight(1f/3f))
+            InfoBlock(R.string.date, date, modifier.weight(1f/3f))
+            launch.status?.let { InfoBlock(R.string.status, it.abbrev,modifier.weight(1f/3f)) }
+        }
+        Row(
+            modifier
+                .fillMaxWidth()
+                .padding(bottom = 20.dp)
+                .clickable { onAddToCalendar(launch) },
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Text(stringResource(R.string.add_to_calendar))
+            Icon(Icons.Rounded.EditCalendar, stringResource(R.string.add_to_calendar))
+        }
+
+        Row(
+            modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center
+        ) {
+            InfoBlock(R.string.pad, launch.pad?.name)
+        }
+        Row(
+            modifier
+                .fillMaxWidth()
+                .padding(bottom = 20.dp)
+                .clickable { launch.pad?.mapUrl?.let { onOpenMaps(it) } },
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Text(stringResource(R.string.view_map))
+            Icon(Icons.Rounded.Map, stringResource(R.string.view_map))
+        }
+        Row(
+            modifier
+                .fillMaxWidth()
+                .padding(bottom = 5.dp),
+            horizontalArrangement = Arrangement.Center
+        ) {
+            InfoBlock(R.string.lsp, launch.lsp?.name)
+        }
     }
+
 }
 
 @Composable
 fun InfoBlock(
     type: Int,
-    value: String,
+    value: String?,
     modifier: Modifier = Modifier
 ) {
     Column(
+        modifier,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(stringResource(type), style = MaterialTheme.typography.body1, color = MaterialTheme.colors.secondary)
-        Text(value, style = MaterialTheme.typography.body2, color = MaterialTheme.colors.onBackground)
+        Text(value ?: stringResource(R.string.unknown), style = MaterialTheme.typography.body2, color = MaterialTheme.colors.onBackground)
     }
 }
 
 @Composable
-fun Title(
+fun LaunchTitle(
     launchName: String?,
     onReturn: () -> Unit,
     modifier: Modifier = Modifier
@@ -199,16 +223,21 @@ fun Title(
     }
 }
 
-/*
+
+
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {
-    SpaceGazeTheme() {
-        LaunchScreen(
-            launch = Launch("123", "Example Launch", rocket = Rocket(RocketConfiguration("rocket name", "rocket description", null)), status = null, lsp = null, net = "2023-03-30T10:00:00Z", mission = null, isUpcoming = false, image = null ),
+    SpaceGazeTheme {
+        LaunchTitle(
+            launchName = DataSource().getLaunchPreviewData().rocket.configuration?.name,
             onReturn = {}
         )
+        NameAndDescription(launch = DataSource().getLaunchPreviewData())
+        Image(launch = DataSource().getLaunchPreviewData())
     }
 }
 
- */
+
+
+

@@ -20,12 +20,15 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import retrofit2.HttpException
+import java.io.IOException
 
 private const val TAG = "ViewModel"
 
 sealed interface SpaceStationUiState {
-    data class SpaceStations(val ActiveSpaceStationList: List<SpaceStation>, val InActiveSpaceStationList: List<SpaceStation>) : SpaceStationUiState
+    data class SpaceStations(val ActiveSpaceStationList: Flow<List<SpaceStation>>, val InActiveSpaceStationList: Flow<List<SpaceStation>>) : SpaceStationUiState
     object Loading : SpaceStationUiState
+    object Error : SpaceStationUiState
 }
 
 class SpaceStationViewModel(private val launchLibraryRepository: LaunchLibraryRepository, private val launchDao: LaunchDao) : ViewModel() {
@@ -34,30 +37,42 @@ class SpaceStationViewModel(private val launchLibraryRepository: LaunchLibraryRe
 
 
     init {
-        getSpaceStations()
+        viewModelScope.launch {
+            getSpaceStationsApi()
+            getSpaceStationsLocal()
+        }
+    }
+
+    private fun getSpaceStationsApi() {
+        viewModelScope.launch {
+            try {
+                val stations = launchLibraryRepository.getSpaceStations()
+                saveToDb(stations)
+            } catch (e: IOException) {
+                Log.e(TAG, "There was an IOexception with retrieving the stations")
+                SpaceStationUiState.Error
+            } catch (e: HttpException) {
+                Log.e(TAG, "There was an HttpException with retrieving the stations")
+                SpaceStationUiState.Error
+            }
+        }
     }
 
     fun getStationById(id: Int): Flow<SpaceStation> {
         return launchDao.getStationFromId(id)
     }
-    private fun getSpaceStations() {
-       viewModelScope.launch() {
-           withContext(Dispatchers.IO) {
-               val stations = launchLibraryRepository.getSpaceStations()
-               saveToDb(stations)
-               val activeStations = launchDao.getActiveStations()
-               val inActiveStations = launchDao.getInActiveStations()
-               spaceStationUiState = SpaceStationUiState.SpaceStations(activeStations, inActiveStations)
-           }
-       }
+    private fun getSpaceStationsLocal() {
+       val activeStations = launchDao.getActiveStations()
+       val inActiveStations = launchDao.getInActiveStations()
+       spaceStationUiState = SpaceStationUiState.SpaceStations(activeStations, inActiveStations)
     }
 
     private fun saveToDb(spaceStationList: SpaceStationList) {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
                 launchDao.clearStations()
-                spaceStationList.spaceStations.forEach { launch ->
-                    launchDao.insertSpaceStation(launch)
+                spaceStationList.spaceStations.forEach { station ->
+                    launchDao.insertSpaceStation(station)
                 }
             }
         }

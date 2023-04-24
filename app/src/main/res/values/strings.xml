@@ -9,6 +9,9 @@
     <string name="recent">Recent</string>
     <string name="time">Time</string>
     <string name="date">Date</string>
+    <string name="pad">Pad</string>
+    <string name="lsp">Lsp</string>
+    <string name="unknown">Unknown</string>
     <string name="status">Status</string>
     <string name="loading">Loading</string>
     <string name="launcher_photo">Launcher Photo</string>
@@ -22,4 +25,6 @@
     <string name="inactive">Inactive</string>
     <string name="settings">Settings</string>
     <string name="space_station">Space Stations</string>
+    <string name="add_to_calendar">Add to calendar</string>
+    <string name="view_map">View pad location</string>
 </resources>

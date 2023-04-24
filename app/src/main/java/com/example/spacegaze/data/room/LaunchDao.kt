@@ -61,7 +61,7 @@ interface LaunchDao {
             where status_id = 1
         """
     )
-    fun getActiveStations(): List<SpaceStation>
+    fun getActiveStations(): Flow<List<SpaceStation>>
 
     @Query(
         """
@@ -69,7 +69,7 @@ interface LaunchDao {
             where status_id != 1
         """
     )
-    fun getInActiveStations(): List<SpaceStation>
+    fun getInActiveStations(): Flow<List<SpaceStation>>
 
     @Query(
         """

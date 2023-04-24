@@ -207,8 +207,10 @@ fun SpaceGazeApp(
             ) {backStackEntry ->
                 val stationId = backStackEntry.arguments?.getString(spaceStationArgument)
                     ?: error("spaceStationArgument can not be null")
-                val station by spaceStationViewModel.getStationById(stationId.toInt()).collectAsState(null)
-                station?.let { it1 -> SpaceStationScreen(it1) }
+                val spaceStation by spaceStationViewModel.getStationById(stationId.toInt()).collectAsState(null)
+                spaceStation?.let { station -> SpaceStationScreen(
+                    station,
+                    onReturn = { navController.popBackStack(SpaceGazeScreen.SpaceStationOverview.name, inclusive = false) }) }
             }
             composable(
                 route = SpaceGazeScreen.Settings.name,

@@ -31,7 +31,6 @@ import java.io.IOException
 private const val TAG = "ViewModel"
 sealed interface SpaceGazeUiState {
     data class UpcomingLaunches(val launchList: Flow<List<Launch>>) : SpaceGazeUiState
-    object Success : SpaceGazeUiState
     object Error : SpaceGazeUiState
     object Loading : SpaceGazeUiState
 }
