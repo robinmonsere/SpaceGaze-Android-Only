@@ -1,29 +1,29 @@
 package com.example.spacegaze.ui.screens
 
-import android.content.res.Resources.Theme
-import android.util.Log
 import androidx.annotation.StringRes
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.spacegaze.R
-import com.example.spacegaze.ui.SpaceGazeUiState
-import com.example.spacegaze.ui.theme.ExtendedTheme
-import com.example.spacegaze.util.getTimeDifference
-import androidx.compose.foundation.lazy.items
-import androidx.compose.runtime.*
 import com.example.spacegaze.model.Launch
+import com.example.spacegaze.ui.PreviousLaunchesUiState
+import com.example.spacegaze.ui.SpaceGazeUiState
 import com.example.spacegaze.ui.SpaceGazeViewModel
 import com.example.spacegaze.util.getTimeCleaned
+import com.example.spacegaze.util.getTimeDifference
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.first
 
 private const val TAG = "HomeScreen"
 
@@ -31,7 +31,9 @@ private const val TAG = "HomeScreen"
 fun HomeScreen(
     spaceGazeUiState: SpaceGazeUiState,
     viewModel: SpaceGazeViewModel,
-    onViewLaunch: (String) -> Unit,
+    previousLaunchesUiState: PreviousLaunchesUiState,
+    onViewUpcomingLaunch: (String) -> Unit,
+    onViewRecentLaunch: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -40,18 +42,32 @@ fun HomeScreen(
             .fillMaxHeight(),
         verticalArrangement = Arrangement.SpaceBetween
     ) {
-        Log.d(TAG, spaceGazeUiState.toString())
         when (spaceGazeUiState) {
             is SpaceGazeUiState.UpcomingLaunches -> {
                 val launches = spaceGazeUiState.launchList.collectAsState(initial = emptyList()).value
                 if (launches.isNotEmpty()) {
-                    NextLaunch(launches[0], onViewLaunch)
+                    NextLaunch(launches[0], onViewUpcomingLaunch)
                     val removedFirst = launches.drop(1)
-                    ScheduledLaunches(removedFirst, onViewLaunch)
-                    RecentLaunches(launches, onViewLaunch)
+                    ScheduledLaunches(removedFirst, onViewUpcomingLaunch)
                 }
             }
-            else -> {}
+            else -> {
+
+            }
+        }
+        when (previousLaunchesUiState) {
+            is PreviousLaunchesUiState.PreviousLaunches -> {
+                val launches = previousLaunchesUiState.launchList
+                RecentLaunches(launches.launches, onViewRecentLaunch)
+            }
+            is PreviousLaunchesUiState.Loading -> {
+                LoadingImg()
+            } is PreviousLaunchesUiState.Error -> {
+                BrokenImg()
+            }
+            else -> {
+
+            }
         }
     }
 }
@@ -118,7 +134,7 @@ fun TimeBlock(
         Spacer(modifier.height(10.dp))
         Text(
             text = stringResource(id = timeType),
-            color = ExtendedTheme.colors.secondaryOnSurface,
+            color = MaterialTheme.colors.secondary,
         )
     }
 }
@@ -176,7 +192,7 @@ private fun LaunchCardItem(
                         modifier
                             .padding(end = 10.dp, top = 7.dp, bottom = 7.dp)
                             .background(
-                                color = ExtendedTheme.colors.accentColor,
+                                color = MaterialTheme.colors.secondaryVariant,
                                 shape = RoundedCornerShape(5.dp)
                             )
                             .width(2.dp)

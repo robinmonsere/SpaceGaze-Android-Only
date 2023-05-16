@@ -1,5 +1,6 @@
 package com.example.spacegaze.ui.theme
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.darkColors
@@ -13,26 +14,21 @@ val DarkColorPalette = darkColors(
     surface = SurfaceGray,
     onSurface = White,
     secondary = onSurfaceGray,
-    //onSecondary = AccentRed,
+    primaryVariant = BottomBarGray,
+    onPrimary = IconGray,
+    secondaryVariant = AccentRed,
 )
 
+@SuppressLint("ConflictingOnColor")
 val LightColorPalette = lightColors(
-    // take a look at the dark colors and change the colors in lightColorPallet
-    background = White,
+    background = BackgroundWhite,
     onBackground = Black,
-    surface = onSurfaceGray,
+    surface = White,
     onSurface = Black,
-    secondary = Black,
-
-
-    /* Other default colors to override
-    background = Color.White,
-    surface = Color.White,
-    onPrimary = Color.White,
-    onSecondary = Color.Black,
-    onBackground = Color.Black,
-    onSurface = Color.Black,
-    */
+    secondary = Purple,
+    primaryVariant = White,
+    onPrimary = Black,
+    secondaryVariant = AccentRed,
 )
 
 @Composable

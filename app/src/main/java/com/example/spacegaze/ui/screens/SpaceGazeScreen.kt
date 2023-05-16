@@ -7,6 +7,8 @@ import android.content.Intent
 import android.net.Uri
 import android.provider.CalendarContract
 import android.util.Log
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -31,6 +33,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -42,14 +45,18 @@ import androidx.navigation.navArgument
 import com.example.spacegaze.R
 import com.example.spacegaze.model.Launch
 import com.example.spacegaze.model.SpaceStation
+import com.example.spacegaze.ui.PreviousLaunchesViewModel
 import com.example.spacegaze.ui.SpaceGazeViewModel
 import com.example.spacegaze.ui.SpaceStationViewModel
 import org.threeten.bp.ZonedDateTime
 import java.util.*
+import androidx.lifecycle.viewModelScope
+import com.example.spacegaze.ui.PreviousLaunchesUiState
 
 enum class SpaceGazeScreen {
     Home,
-    Launch,
+    UpcomingLaunch,
+    PreviousLaunch,
     SpaceStation,
     SpaceStationOverview,
     Settings,
@@ -67,6 +74,8 @@ fun SpaceGazeBottomBar(
 ) {
     BottomAppBar(
         modifier.clip(RoundedCornerShape(15.dp, 15.dp, 0.dp, 0.dp)),
+        backgroundColor = MaterialTheme.colors.primaryVariant,
+        contentColor = MaterialTheme.colors.onPrimary
     ) {
         Row(
             modifier.fillMaxWidth(),
@@ -132,7 +141,7 @@ fun ToggleIconButtonCustom(
         Icon(
             imageVector = if (isSelected) selectedIcon else unselectedIcon,
             contentDescription = stringResource(contentDescription),
-            modifier = Modifier.size(30.dp)
+            modifier = Modifier.size(30.dp),
         )
     }
 }
@@ -143,6 +152,7 @@ fun ToggleIconButtonCustom(
 fun SpaceGazeApp(
     modifier: Modifier = Modifier,
     spaceGazeViewModel: SpaceGazeViewModel = viewModel(factory = SpaceGazeViewModel.Factory),
+    previousLaunchesViewModel: PreviousLaunchesViewModel = viewModel(factory = PreviousLaunchesViewModel.Factory),
     spaceStationViewModel: SpaceStationViewModel = viewModel(factory = SpaceStationViewModel.Factory)
 ) {
     val navController = rememberNavController()
@@ -169,14 +179,17 @@ fun SpaceGazeApp(
             composable(route = SpaceGazeScreen.Home.name) {
                 HomeScreen(
                     spaceGazeUiState = spaceGazeViewModel.spaceGazeUiState,
+                    previousLaunchesUiState = previousLaunchesViewModel.previousLaunchesUiState,
                     viewModel = spaceGazeViewModel,
-                    onViewLaunch = { launchId ->
-                        navController.navigate("${SpaceGazeScreen.Launch.name}/$launchId") }
+                    onViewUpcomingLaunch = { launchId ->
+                        navController.navigate("${SpaceGazeScreen.UpcomingLaunch.name}/$launchId") },
+                    onViewRecentLaunch = { launchId ->
+                        navController.navigate("${SpaceGazeScreen.PreviousLaunch.name}/$launchId") },
                 )
             }
             val launchIdArgument = "launchId"
             composable(
-                route = SpaceGazeScreen.Launch.name + "/{$launchIdArgument}",
+                route = SpaceGazeScreen.UpcomingLaunch.name + "/{$launchIdArgument}",
                 arguments = listOf(navArgument(launchIdArgument) {type = NavType.StringType})
             ) { backStackEntry ->
                 val launchId = backStackEntry.arguments?.getString(launchIdArgument)
@@ -190,6 +203,31 @@ fun SpaceGazeApp(
                         onOpenMaps = { location: String -> openMaps(context, location) },
                         onAddToCalendar = { launch: Launch -> addToCalendar(context, launch) }
                     )
+                }
+            }
+            composable(
+                route = SpaceGazeScreen.PreviousLaunch.name + "/{$launchIdArgument}",
+                arguments = listOf(navArgument(launchIdArgument) {type = NavType.StringType})
+            ) {backStackEntry ->
+                val launchId = backStackEntry.arguments?.getString(launchIdArgument)
+                    ?: error("launchIdArgument can not be null")
+                val context = LocalContext.current
+                previousLaunchesViewModel.getLaunchById(launchId)
+                when (val uiState = previousLaunchesViewModel.previousLaunchesUiState) {
+                    is PreviousLaunchesUiState.PreviousLaunch -> {
+                        LaunchScreen(
+                            uiState.launch,
+                            onReturn = { navController.popBackStack(SpaceGazeScreen.Home.name, inclusive = false) },
+                            onOpenMaps = { location: String -> openMaps(context, location) },
+                            onAddToCalendar = { launch: Launch -> addToCalendar(context, launch) }
+                        )
+                    }
+                    is PreviousLaunchesUiState.Loading -> {
+                        Log.e(TAG, "Tets")
+                        LoadingImg()
+                    } else -> {
+                        BrokenImg()
+                    }
                 }
             }
             composable(

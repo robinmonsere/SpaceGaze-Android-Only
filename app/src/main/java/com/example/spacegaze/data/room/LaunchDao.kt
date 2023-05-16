@@ -29,6 +29,14 @@ interface LaunchDao {
 
     @Query(
         """
+            SELECT * FROM launches
+            LIMIT 1
+        """
+    )
+    fun getNextLaunch(): Launch
+
+    @Query(
+        """
             DELETE FROM launches
         """
     )

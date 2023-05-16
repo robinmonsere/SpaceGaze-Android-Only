@@ -1,7 +1,6 @@
 package com.example.spacegaze.ui.screens
 
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -14,24 +13,18 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import coil.compose.AsyncImage
-import coil.request.ImageRequest
 import com.example.spacegaze.R
 import com.example.spacegaze.model.SpaceStation
 import com.example.spacegaze.ui.SpaceStationUiState
-import com.example.spacegaze.ui.theme.ExtendedTheme
 import com.example.spacegaze.util.getAsyncImage
 
 private const val TAG = "SpaceStationScreen"
@@ -85,7 +78,7 @@ fun ActiveToggle(
             stringResource(R.string.active),
             modifier = if (isActive) modifier
                 .weight(1f)
-                .bottomBorder(2.dp, ExtendedTheme.colors.accentColor)
+                .bottomBorder(2.dp, MaterialTheme.colors.secondaryVariant)
                 .padding(bottom = 7.dp)
                 .clickable { onActive() }
             else modifier
@@ -98,7 +91,7 @@ fun ActiveToggle(
             stringResource(R.string.inactive),
             modifier = if (!isActive) modifier
                 .weight(1f)
-                .bottomBorder(2.dp, ExtendedTheme.colors.accentColor)
+                .bottomBorder(2.dp, MaterialTheme.colors.secondaryVariant)
                 .padding(bottom = 7.dp)
                 .clickable { onInActive() }
             else modifier
@@ -115,7 +108,6 @@ fun SpaceStationsList(
     spaceStations: List<SpaceStation>,
     onViewSpaceStation: (Int) -> Unit
 ) {
-    Log.d(TAG, spaceStations.toString())
     LazyColumn() {
         items(items = spaceStations) { station ->
             SpaceStationCardItem(station, onViewSpaceStation)
@@ -147,7 +139,7 @@ fun SpaceStationCardItem(
                     modifier
                         .padding(end = 5.dp)
                         .background(
-                            color = ExtendedTheme.colors.accentColor,
+                            color = MaterialTheme.colors.secondaryVariant,
                             shape = RoundedCornerShape(5.dp)
                         )
                         .width(2.dp)

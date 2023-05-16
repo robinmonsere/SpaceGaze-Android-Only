@@ -39,16 +39,7 @@ class SpaceGazeViewModel(private val launchLibraryRepository: LaunchLibraryRepos
     var spaceGazeUiState: SpaceGazeUiState by mutableStateOf(SpaceGazeUiState.Loading)
         private set
 
-
-    /*
     init {
-        getUpcomingLaunches()
-    }
-
-     */
-
-    init {
-        Log.d(TAG, "Init")
         viewModelScope.launch {
             getUpcomingLaunchesApi()
             getUpcomingLaunchesLocal()
@@ -69,7 +60,6 @@ class SpaceGazeViewModel(private val launchLibraryRepository: LaunchLibraryRepos
                 }
             }
         }
-        Log.d(TAG, "Updated the Database")
     }
 
     private fun getUpcomingLaunchesApi() {
@@ -87,12 +77,7 @@ class SpaceGazeViewModel(private val launchLibraryRepository: LaunchLibraryRepos
         }
     }
 
-    fun getPreviousLaunches() {
-
-    }
-
     fun getLaunchById(id: String) : Flow<List<Launch>> = launchDao.getLaunchById(id)
-
 
     companion object {
         val Factory: ViewModelProvider.Factory = viewModelFactory {
@@ -103,5 +88,4 @@ class SpaceGazeViewModel(private val launchLibraryRepository: LaunchLibraryRepos
             }
         }
     }
-
 }

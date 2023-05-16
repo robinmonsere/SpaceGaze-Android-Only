@@ -76,7 +76,6 @@ class SpaceStationViewModel(private val launchLibraryRepository: LaunchLibraryRe
                 }
             }
         }
-        Log.d(TAG, "Updated the Database (Space station)")
     }
 
     companion object {

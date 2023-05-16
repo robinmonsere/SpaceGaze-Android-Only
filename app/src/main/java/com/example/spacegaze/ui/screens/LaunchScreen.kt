@@ -4,6 +4,7 @@ package com.example.spacegaze.ui.screens
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -14,16 +15,11 @@ import androidx.compose.material.icons.rounded.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import coil.compose.AsyncImage
-import coil.request.ImageRequest
 import com.example.spacegaze.R
 import com.example.spacegaze.data.preview.DataSource
 import com.example.spacegaze.model.Launch
@@ -44,7 +40,7 @@ fun LaunchScreen(
     ) {
         LaunchTitle(launch.rocket.configuration?.name,onReturn)
         NameAndDescription(launch)
-        Image(launch)
+        RocketImage(launch)
         Information(launch, onOpenMaps, onAddToCalendar)
     }
 }
@@ -97,7 +93,7 @@ fun NameAndDescription(
 }
 
 @Composable
-fun Image(
+fun RocketImage(
     launch: Launch,
     modifier: Modifier = Modifier
 ) {
@@ -223,6 +219,44 @@ fun LaunchTitle(
     }
 }
 
+@Composable
+fun LoadingImg(
+    modifier: Modifier = Modifier
+) {
+    Row(
+        horizontalArrangement = Arrangement.Center,
+        modifier = modifier
+            .height(150.dp)
+            .fillMaxWidth()
+    ) {
+        Image(
+            painterResource(R.drawable.loading_img),
+            stringResource(R.string.loading),
+            modifier.fillMaxSize()
+        )
+    }
+}
+
+@Composable
+fun BrokenImg(
+    modifier: Modifier = Modifier
+) {
+    Text(stringResource(R.string.connection))
+    Row(
+        horizontalArrangement = Arrangement.Center,
+        modifier = modifier
+            .height(150.dp)
+            .padding(top = 10.dp,end = 10.dp)
+            .fillMaxWidth()
+    ) {
+        Image(
+            painterResource(R.drawable.ic_broken_image),
+            stringResource(R.string.loading),
+            modifier.fillMaxSize()
+        )
+    }
+}
+
 
 
 @Preview(showBackground = true)
@@ -230,11 +264,11 @@ fun LaunchTitle(
 fun DefaultPreview() {
     SpaceGazeTheme {
         LaunchTitle(
-            launchName = DataSource().getLaunchPreviewData().rocket.configuration?.name,
+            launchName = DataSource().getMockLaunchData().rocket.configuration?.name,
             onReturn = {}
         )
-        NameAndDescription(launch = DataSource().getLaunchPreviewData())
-        Image(launch = DataSource().getLaunchPreviewData())
+        NameAndDescription(launch = DataSource().getMockLaunchData())
+        RocketImage(launch = DataSource().getMockLaunchData())
     }
 }
 
