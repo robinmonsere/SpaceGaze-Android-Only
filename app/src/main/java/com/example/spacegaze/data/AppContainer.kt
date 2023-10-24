@@ -11,7 +11,7 @@ interface AppContainer {
 }
 
 class DefaultAppContainer : AppContainer {
-    private val BASE_URL = "https://ll.thespacedevs.com/2.2.0/"
+    private val BASE_URL = "https://lldev.thespacedevs.com/2.2.0/"
 
     val json = Json {
         ignoreUnknownKeys = true

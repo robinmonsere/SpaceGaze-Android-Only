@@ -7,6 +7,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -44,17 +45,20 @@ fun HomeScreen(
     ) {
         when (spaceGazeUiState) {
             is SpaceGazeUiState.UpcomingLaunches -> {
-                val launches = spaceGazeUiState.launchList.collectAsState(initial = emptyList()).value
+                val launches = spaceGazeUiState.launchList
                 if (launches.isNotEmpty()) {
                     NextLaunch(launches[0], onViewUpcomingLaunch)
-                    val removedFirst = launches.drop(1)
-                    ScheduledLaunches(removedFirst, onViewUpcomingLaunch)
+                    ScheduledLaunches(launches.drop(1), onViewUpcomingLaunch, viewModel)
                 }
             }
+            is SpaceGazeUiState.Loading -> {
+                LoadingImg()
+            }
             else -> {
-
+                Text(text = "Something went wrong")
             }
         }
+        /*
         when (previousLaunchesUiState) {
             is PreviousLaunchesUiState.PreviousLaunches -> {
                 val launches = previousLaunchesUiState.launchList
@@ -69,6 +73,8 @@ fun HomeScreen(
 
             }
         }
+
+         */
     }
 }
 
@@ -143,20 +149,47 @@ fun TimeBlock(
 fun ScheduledLaunches (
     LaunchList: List<Launch>,
     onViewLaunch: (String) -> Unit,
+    viewModel: SpaceGazeViewModel,
     modifier: Modifier = Modifier,
 ) {
-    Column() {
+    Column {
         Text(
             text = stringResource(R.string.scheduled),
             style = MaterialTheme.typography.h1,
         )
+        val listState = rememberLazyListState()
         LazyRow(
-            modifier.background(MaterialTheme.colors.background)
+            modifier.background(MaterialTheme.colors.background),
+            state = listState
         ) {
             items(items = LaunchList) { launch ->
                 LaunchCardItem(launch, onViewLaunch)
             }
+            if (listState.firstVisibleItemIndex >= viewModel.loaded - 3) {
+                viewModel.loadMoreUpcomingLaunches()
+            }
+            item {
+                loadMoreLaunchesCardItem()
+            }
         }
+        Text(text = listState.firstVisibleItemIndex.toString())
+
+    }
+}
+
+@Composable
+private fun loadMoreLaunchesCardItem(
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier
+            .padding(end = 10.dp)
+            .background(MaterialTheme.colors.surface, shape = RoundedCornerShape(16.dp))
+            .width(300.dp)
+            .height(150.dp)
+            .padding(10.dp)
+    ) {
+
     }
 }
 

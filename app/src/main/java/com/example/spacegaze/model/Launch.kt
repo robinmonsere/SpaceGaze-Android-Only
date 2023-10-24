@@ -32,8 +32,7 @@ data class Launch(
     val mission: Mission?,
     @Embedded("pad_")
     val pad: Pad?,
-    val image: String?,
-    var isUpcoming: Boolean = false
+    val image: String?
 )
 
 @Entity

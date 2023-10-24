@@ -268,6 +268,8 @@ private fun openMaps(context: Context, location: String) {
     }
 }
 
+
+
 private fun addToCalendar (context: Context, launch: Launch) {
     val startTime = ZonedDateTime.parse(launch.net)
     val calendarIntent = Intent(Intent.ACTION_INSERT)

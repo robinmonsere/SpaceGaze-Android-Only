@@ -19,6 +19,7 @@ fun launchNotificationManager(ctx: Context) {
 }
 
 fun scheduleNewLaunchNotification(ctx: Context) {
+    /*
     uiScope.launch {
         withContext(Dispatchers.IO) {
             val launchDao = LaunchDatabase.getDatabase(ctx).launchDao()
@@ -32,6 +33,8 @@ fun scheduleNewLaunchNotification(ctx: Context) {
             }
         }
     }
+
+     */
 }
 
 

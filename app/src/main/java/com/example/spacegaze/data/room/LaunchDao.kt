@@ -21,8 +21,14 @@ interface LaunchDao {
 
     @Query(
         """
+        SELECT COUNT(*) FROM launches
+    """
+    )
+    fun getLaunchCount(): Flow<Int>
+
+    @Query(
+        """
             SELECT * FROM launches
-            where isUpcoming = 1
         """
     )
     fun getUpcomingLaunches(): Flow<List<Launch>>
@@ -85,6 +91,7 @@ interface LaunchDao {
             where id = :id
         """
     )
+
     fun getStationFromId(id: Int): Flow<SpaceStation>
 
 

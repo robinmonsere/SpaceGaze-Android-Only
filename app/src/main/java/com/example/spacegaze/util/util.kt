@@ -30,6 +30,7 @@ fun getTimeDifference(targetTime: String): Triple<String, String, String> {
     return Triple(hours.toString(), minutes.toString(), seconds.toString())
 }
 
+// 2023-05-16T09:56:30.174Z
 @VisibleForTesting
 fun getTimeCleaned(dateTimeString: String): Pair<String, String> {
     val dateTime = Instant.parse(dateTimeString).atZone(ZoneId.systemDefault())
